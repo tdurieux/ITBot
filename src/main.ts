@@ -17,7 +17,7 @@ const headless = process.env.headless || ''
 
 export default class Main{
 
-    run(){
+    run(onTab: (url) => void){
 
         const chrome = spawn(chromeAlias,[
         '--remote-debugging-port='+port,
@@ -39,7 +39,6 @@ export default class Main{
 
         let interval2 = setTimeout(() => {
 
-        const log = fs.openSync("log.txt", 'a')
 
         // Accessing chrome publish websocket address
         req(`http://localhost:${port}/json`,function (error, response, body) {
@@ -49,36 +48,7 @@ export default class Main{
             console.log("Enabled websockets for tab 0")
             console.log(tab.id, tab.url)
         
-            const url = tab.webSocketDebuggerUrl;
-        
-            const ws = new WebSocket(url);
-        
-            const listener = Container.get<Listener>(Listener);
-            const api = Container.get<Api>(Api);
-
-            listener.setup(ws, () => {
-                console.log("Websocket channel opened. Enabling runtime namespace")
-
-                listener.sendAndRegister({method: "Runtime.enable"})
-                listener.sendAndRegister({method: "Page.enable"})
-
-                api.gotoPage("https://www.google.com")   
-                api.focus("[name=q]")                
-                
-                setTimeout(() => {
-
-                    api.sendKey("c")
-                    api.sendKey("u")
-                    api.sendKey("b")
-                    api.sendKey("a")
-                        
-                }, 4000)
-
-
-
-            })
-
-
+            onTab(tab)
         });
         
 
@@ -87,5 +57,3 @@ export default class Main{
     }
 
 }
-
-new Main().run()
