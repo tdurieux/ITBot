@@ -8,12 +8,14 @@ import * as req from 'request';
 import Listener from '../src/core/listener';
 import Api from '../src/core/api';
 import Main from '../src/main';
+import Stepper from '../src/core/stepper';
 
-describe('machine', function() {
-  it('First test', function() {
+const main = new Main();
+
+
+describe('Api test', function() {
+  it('Api commands', function() {
     
-    const main = new Main();
-
     main.run(5000, 1000, (tab) => {
 
       const url = tab.webSocketDebuggerUrl;
@@ -22,25 +24,24 @@ describe('machine', function() {
   
       const listener = Container.get<Listener>(Listener);
       const api = Container.get<Api>(Api);
-  
+      const stepper = Container.get<Stepper>(Stepper);
+
       listener.setup(ws, () => {
           console.log("Websocket channel opened. Enabling runtime namespace")
   
           listener.sendAndRegister({method: "Runtime.enable"})
           listener.sendAndRegister({method: "Page.enable"})
   
-          api.gotoPage("https://www.google.com")   
-          api.focus("[name=q]")                
           
-          setTimeout(() => {
-  
-          api.sendKey("c")
-          api.sendKey("u")
-          api.sendKey("b")
-          api.sendKey("a")
-              
-          }, 500)
-  
+
+
+          stepper.execute(`
+            goto https://www.google.com
+            focus [name=q]
+            sleep 2000
+            key c
+            sleep 1000
+          `)
   
   
         })
@@ -48,5 +49,6 @@ describe('machine', function() {
     })
 
   });
+
 
 });
