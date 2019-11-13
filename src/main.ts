@@ -3,6 +3,7 @@ import * as path from 'path';
 import Container from './core/container';
 import * as WebSocket from 'ws';
 import * as req from 'request';
+import Listener from './core/listener';
 
 // To open chrome as child process
 const {  spawn } = require('child_process');
@@ -11,11 +12,13 @@ const port = process.env.port || 9222;
 const waitFor = parseInt(process.env.sessionTime) || 1000 ;// milliseconds
 const timeout = (60 + waitFor)*1000; //10 seconds
 const chromeAlias = process.env.chrome || 'chrome'
+const headless = process.env.headless || ''
 
 
 const chrome = spawn(chromeAlias,[
   '--remote-debugging-port='+port,
   '--user-data-dir=temp',
+  headless,
   "google.com"
 ]);
 
@@ -46,26 +49,21 @@ let interval2 = setTimeout(() => {
   
     const ws = new WebSocket(url);
   
-    ws.on('open', function open() {
+    const listener = new Listener(ws, () => {
         console.log("Websocket channel opened. Enabling runtime namespace")
-         ws.send(JSON.stringify({id: 3, method: 'Runtime.enable'}))
-    });
-   
-  
-    ws.on('message', function incoming(data) {
-      
-      fs.writeSync(log, data + "\n")
-      const obj = JSON.parse(data)
-      
-      if(obj.id === 3){
 
-        // TODO Execute pipeline
+        listener.sendAndRegister({method: "Runtime.enable"})
+        listener.sendAndRegister({method: "Page.enable"})
 
-        
-      }
-      
-    });
-  
+
+        listener.sendAndRegister({method: 'Runtime.evaluate',
+            params: {
+                expression: `document.querySelector("[name=q]").value = "Writing from external script call"`
+            }})
+
+    })
+
+
   });
   
 
