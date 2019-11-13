@@ -62,7 +62,19 @@ export default class Main{
                 listener.sendAndRegister({method: "Runtime.enable"})
                 listener.sendAndRegister({method: "Page.enable"})
 
-                api.gotoPage("https://www.youtube.com")
+                api.gotoPage("https://www.google.com")   
+                api.focus("[name=q]")                
+                
+                setTimeout(() => {
+
+                    api.sendKey("c")
+                    api.sendKey("u")
+                    api.sendKey("b")
+                    api.sendKey("a")
+                        
+                }, 4000)
+
+
 
             })
 

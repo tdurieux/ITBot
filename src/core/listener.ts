@@ -5,7 +5,7 @@ import { injectable } from "inversify";
 @injectable()
 export default class Listener{
 
-    static counter: number = 42;
+    static counter: number = 0;
 
     listeners: { [key: number]: {
         cb: (data: any) => void,
