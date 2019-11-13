@@ -7,19 +7,7 @@ import * as WebSocket from 'ws';
 import * as req from 'request';
 import Listener from '../src/core/listener';
 import Api from '../src/core/api';
-import { isMainThread } from 'worker_threads';
 import Main from '../src/main';
-import { mixedTypeAnnotation } from 'babel-types';
-
-// To open chrome as child process
-const {  spawn } = require('child_process');
-
-const port = process.env.port || 9222;
-const waitFor = parseInt(process.env.sessionTime) || 30000 ;// milliseconds
-const timeout = waitFor; //10 seconds
-const chromeAlias = process.env.chrome || 'chrome'
-const headless = process.env.headless || ''
-
 
 describe('machine', function() {
   it('First test', function() {
