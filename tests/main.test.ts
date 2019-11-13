@@ -14,7 +14,7 @@ describe('machine', function() {
     
     const main = new Main();
 
-    main.run((tab) => {
+    main.run(5000, 1000, (tab) => {
 
       const url = tab.webSocketDebuggerUrl;
           
