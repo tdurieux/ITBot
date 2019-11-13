@@ -4,6 +4,7 @@ import Container from './core/container';
 import * as WebSocket from 'ws';
 import * as req from 'request';
 import Listener from './core/listener';
+import Api from './core/api';
 
 // To open chrome as child process
 const {  spawn } = require('child_process');
@@ -14,58 +15,65 @@ const timeout = (60 + waitFor)*1000; //10 seconds
 const chromeAlias = process.env.chrome || 'chrome'
 const headless = process.env.headless || ''
 
+export default class Main{
 
-const chrome = spawn(chromeAlias,[
-  '--remote-debugging-port='+port,
-  '--user-data-dir=temp',
-  headless,
-  "google.com"
-]);
+    run(){
 
-chrome.stdout.on('data', function(data) {
-  console.log(data.toString());
-});
+        const chrome = spawn(chromeAlias,[
+        '--remote-debugging-port='+port,
+        '--user-data-dir=temp',
+        headless,
+        "google.com"
+        ]);
 
-let interval = setTimeout(()=>{
-  chrome.kill()
-  clearTimeout(interval)
-}, timeout)
+        chrome.stdout.on('data', function(data) {
+        console.log(data.toString());
+        });
 
-// Asking for opened tabs
+        let interval = setTimeout(()=>{
+        chrome.kill()
+        clearTimeout(interval)
+        }, timeout)
 
-let interval2 = setTimeout(() => {
+        // Asking for opened tabs
 
-  const log = fs.openSync("log.txt", 'a')
+        let interval2 = setTimeout(() => {
 
-  // Accessing chrome publish websocket address
-  req(`http://localhost:${port}/json`,function (error, response, body) {
-      
-    const tab = JSON.parse(body)[0];
-  
-    console.log("Enabled websockets for tab 0")
-    console.log(tab.id, tab.url)
-  
-    const url = tab.webSocketDebuggerUrl;
-  
-    const ws = new WebSocket(url);
-  
-    const listener = new Listener(ws, () => {
-        console.log("Websocket channel opened. Enabling runtime namespace")
+        const log = fs.openSync("log.txt", 'a')
 
-        listener.sendAndRegister({method: "Runtime.enable"})
-        listener.sendAndRegister({method: "Page.enable"})
+        // Accessing chrome publish websocket address
+        req(`http://localhost:${port}/json`,function (error, response, body) {
+            
+            const tab = JSON.parse(body)[0];
+        
+            console.log("Enabled websockets for tab 0")
+            console.log(tab.id, tab.url)
+        
+            const url = tab.webSocketDebuggerUrl;
+        
+            const ws = new WebSocket(url);
+        
+            const listener = Container.get<Listener>(Listener);
+            const api = Container.get<Api>(Api);
+
+            listener.setup(ws, () => {
+                console.log("Websocket channel opened. Enabling runtime namespace")
+
+                listener.sendAndRegister({method: "Runtime.enable"})
+                listener.sendAndRegister({method: "Page.enable"})
+
+                api.gotoPage("https://www.youtube.com")
+
+            })
 
 
-        listener.sendAndRegister({method: 'Runtime.evaluate',
-            params: {
-                expression: `document.querySelector("[name=q]").value = "Writing from external script call"`
-            }})
+        });
+        
 
-    })
+            clearTimeout(interval2)
+        }, waitFor)
+    }
 
+}
 
-  });
-  
-
-    clearTimeout(interval2)
-}, waitFor)
+new Main().run()

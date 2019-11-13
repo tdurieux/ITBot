@@ -1,4 +1,6 @@
 import { Container } from "inversify";
+import Listener from "./listener";
+import Api from "./api";
 
 // import OneByOneGenerator from './population_generator/one-by-one.generator';
 // import AllGenerator from './population_generator/all.generator';
@@ -8,7 +10,9 @@ import { Container } from "inversify";
 
 const myContainer = new Container();
 
-// myContainer.bind<ILogger>("ILogger").to(Logger).inSingletonScope();
+myContainer.bind<Listener>(Listener).to(Listener).inSingletonScope();
+myContainer.bind<Api>(Api).to(Api).inSingletonScope();
+
 
 //WebT tools
 // myContainer.bind<WebTTools>(WebTTools).toSelf().inSingletonScope();

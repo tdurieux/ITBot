@@ -1,3 +1,8 @@
+import "reflect-metadata";
+import { injectable } from "inversify";
+
+
+@injectable()
 export default class Listener{
 
     static counter: number = 42;
@@ -9,7 +14,8 @@ export default class Listener{
     
     ws = null;
 
-    constructor(ws, onOpen: () => void){
+
+    setup(ws, onOpen: () => void){
         this.listeners = {}
         this.ws = ws;
 
@@ -18,6 +24,9 @@ export default class Listener{
         ws.on("message", (data: string) => {
 
             const obj = JSON.parse(data)
+
+            if("error" in obj)
+                console.error(obj.error.message)
 
             if(obj.id in this.listeners)
             {
