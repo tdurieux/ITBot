@@ -45,7 +45,7 @@ export default class Api {
             text,
             code
 
-        }}, (data) => console.log(data))
+        }})
     }
 
 }

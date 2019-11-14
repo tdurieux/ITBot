@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import * as fs from 'fs'
 import * as path from 'path';
 import Container from './core/container';
@@ -5,6 +7,7 @@ import * as WebSocket from 'ws';
 import * as req from 'request';
 import Listener from './core/listener';
 import Api from './core/api';
+import { injectable } from 'inversify';
 
 // To open chrome as child process
 const {  spawn } = require('child_process');
@@ -15,32 +18,24 @@ const timeout = (parseInt(process.env.sessionTime) || 5)*1000; //5 seconds by de
 const chromeAlias = process.env.chrome || 'chrome'
 const headless = process.env.headless || ''
 
+@injectable()
 export default class Main{
 
-    run(sessionTime, actionsDelay, onTab: (url) => void, onFinish?: () => void){
+    public chromeSession: any;
 
-        const chrome = spawn(chromeAlias,[
+    run(actionsDelay:number, onTab: (url) => void){
+
+        this.chromeSession = spawn(chromeAlias,[
             '--remote-debugging-port='+port,
             '--user-data-dir=temp',
             headless,
             "google.com"
         ]);
 
-        chrome.stdout.on('data', function(data) {
+        this.chromeSession.stdout.on('data', function(data) {
             console.log(data.toString());
         });
 
-        let interval = setTimeout(()=>{
-            
-            console.log("Finishing session...")
-
-            chrome.kill()
-            clearTimeout(interval)
-
-            if(onFinish)
-                onFinish()
-
-        }, sessionTime)
 
         // Asking for opened tabs
 

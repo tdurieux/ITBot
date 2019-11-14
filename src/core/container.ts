@@ -3,6 +3,7 @@ import Listener from "./listener";
 import Api from "./api";
 import Stepper from "./stepper";
 import VideoRecorder from "./video.recorder";
+import Main from "../main";
 
 // import OneByOneGenerator from './population_generator/one-by-one.generator';
 // import AllGenerator from './population_generator/all.generator';
@@ -16,6 +17,7 @@ myContainer.bind<Listener>(Listener).to(Listener).inSingletonScope();
 myContainer.bind<Api>(Api).to(Api).inSingletonScope();
 myContainer.bind<Stepper>(Stepper).to(Stepper).inSingletonScope();
 myContainer.bind<VideoRecorder>(VideoRecorder).to(VideoRecorder);
+myContainer.bind<Main>(Main).to(Main).inSingletonScope();
 
 //WebT tools
 // myContainer.bind<WebTTools>(WebTTools).toSelf().inSingletonScope();

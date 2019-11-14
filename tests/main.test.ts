@@ -11,9 +11,7 @@ import Main from '../src/main';
 import Stepper from '../src/core/stepper';
 import VideoRecorder from '../src/core/video.recorder';
 
-const main = new Main();
-
-  
+const main = Container.get<Main>(Main)
 const listener = Container.get<Listener>(Listener);
 const api = Container.get<Api>(Api);
 const stepper = Container.get<Stepper>(Stepper);
@@ -22,7 +20,7 @@ const recorder = Container.get<VideoRecorder>(VideoRecorder);
 describe('Api test', function() {
   it('Api commands', function() {
     
-    main.run(20000, 1000, (tab) => {
+    main.run(1000, (tab) => {
 
       const url = tab.webSocketDebuggerUrl;
           
@@ -48,12 +46,13 @@ describe('Api test', function() {
 
             key Enter
             
+            sleep 2500
           `)
   
   
         })
     
-    }, ()=> recorder.stop())
+    })
 
   });
 

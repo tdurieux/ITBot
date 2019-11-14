@@ -5,8 +5,9 @@ import Listener from "./listener";
 import Api from "./api";
 import { homedir } from "os";
 import { circularDependencyToException } from "inversify/dts/utils/serialization";
+import Main from "../main";
 
-export type opcodes = 'goto' | 'sleep' | 'char' | 'focus' | 'text' | 'key'
+export type opcodes = 'goto' | 'sleep' | 'char' | 'focus' | 'text' | 'key' 
 
 export type Instruction = {
     opcode: opcodes, params: string[]
@@ -267,6 +268,9 @@ export default class Stepper {
     @inject(Api)
     listener: Api;
 
+    @inject(Main)
+    main: Main;
+
     actions: Instruction[];
 
     tokenize(instruction: string){
@@ -375,8 +379,6 @@ export default class Stepper {
         for(let i = 0; i < actions.length; i++){
             let code = actions[i]
 
-
-            let interrupt = false;
             switch(code.opcode){
                 case 'goto':
                     this.validateNumberOfParamsAndRaise(code.opcode, code.params.length, 1)
@@ -415,18 +417,19 @@ export default class Stepper {
                         actions.slice(i + 1)
                     )
                     
-                    interrupt = true;
+                    return;
+
                   break;
                     
                   default:
                     console.error(`Unknown code ${code.opcode} ${code.params}`)
             }
 
-            if(interrupt)
-                break;
-
-
         }
+
+        this.main.chromeSession.kill()
+
+        process.exit(0)
 
     }
 
