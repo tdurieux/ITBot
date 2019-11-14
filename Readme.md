@@ -59,7 +59,7 @@ sleep 2500
 
 ## Background
 
-BrowserBot uses the [DevTool protocol](https://chromedevtools.github.io/devtools-protocol/v8/Runtime ) from Chrome. It is like puppeteer but much much simpler. Following some words about how this tools works.
+BrowserBot uses the [DevTool protocol](https://chromedevtools.github.io/devtools-protocol/v8/Runtime ) from Chrome. It is like puppeteer but much much simpler. The following steps can be implemented under any stack, we used JS because we love it :).
 
 **Steps**
 
@@ -171,3 +171,5 @@ Result
     }
 }
 ```
+
+**Other examples [here](https://github.com/Jacarte/ws_chrome_debugging_example)**
