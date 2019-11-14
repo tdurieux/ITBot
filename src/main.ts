@@ -31,7 +31,6 @@ export default class Main{
 
         this.chromeSession = spawn(chromeAlias,[
             '--remote-debugging-port='+port,
-            '--headless',
             '--user-data-dir=temp',
             '--js-flags="--print-bytecode"'
         ]);

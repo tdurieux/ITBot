@@ -10,12 +10,14 @@ import Api from '../src/core/api';
 import Main from '../src/main';
 import Stepper from '../src/core/stepper';
 import VideoRecorder from '../src/core/video.recorder';
+import ProfileRecorder from '../src/core/profile.recorder';
 
 const main = Container.get<Main>(Main)
 const listener = Container.get<Listener>(Listener);
 const api = Container.get<Api>(Api);
 const stepper = Container.get<Stepper>(Stepper);
 const recorder = Container.get<VideoRecorder>(VideoRecorder);
+const profileRecorder = Container.get<ProfileRecorder>(ProfileRecorder);
 
 describe('Api test', function() {
   it('Api commands', function() {
@@ -34,8 +36,8 @@ describe('Api test', function() {
           listener.sendAndRegister({method: "Runtime.enable"})
           listener.sendAndRegister({method: "Page.enable"})
   
-          
 
+          profileRecorder.start("test")
 
           stepper.execute(`
             goto https://www.google.com
@@ -48,21 +50,13 @@ describe('Api test', function() {
             
             sleep 2500
 
-            focus [name=q]
-
-            key Escape
-
-            sleep 2000
-
-            text 'assert-team.eu' 200 400
-
-            key Enter
-            
-            sleep 2500
           `)
-  
+
+
   
         })
+
+
     
     })
 

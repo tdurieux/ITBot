@@ -6,6 +6,7 @@ import Api from "./api";
 import { homedir } from "os";
 import { circularDependencyToException } from "inversify/dts/utils/serialization";
 import Main from "../main";
+import ProfileRecorder from "./profile.recorder";
 
 export type opcodes = 'goto' | 'sleep' | 'char' | 'focus' | 'text' | 'key' 
 
@@ -271,6 +272,9 @@ export default class Stepper {
     @inject(Main)
     main: Main;
 
+    @inject(ProfileRecorder)
+    profileRecorder: ProfileRecorder;
+
     actions: Instruction[];
 
     tokenize(instruction: string){
@@ -427,9 +431,14 @@ export default class Stepper {
 
         }
 
-        this.main.close()
+        this.profileRecorder.stop()
 
-        process.exit(0)
+        setTimeout(() => {
+            this.main.close()
+            process.exit(0)
+        }, 3000)
+
+       
 
     }
 
