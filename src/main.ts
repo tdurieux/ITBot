@@ -12,7 +12,7 @@ import { injectable } from 'inversify';
 // To open chrome as child process
 const {  spawn } = require('child_process');
 
-const port = process.env.port || 9222;
+const port = process.env.chromePort || 9222;
 const waitFor =  1000;// seconds
 const timeout = (parseInt(process.env.sessionTime) || 5)*1000; //5 seconds by default
 const chromeAlias = process.env.chrome || 'chrome'
