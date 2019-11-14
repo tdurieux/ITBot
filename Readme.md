@@ -6,10 +6,12 @@ BrowserBot is a wrapper of the Chrome DevTool. It uses a self language to execut
 ## Recording
 
 BrowserBot records some metrics as well:
- - [x] Screnshoots of the session every x milliseconds
+ - [x] Screnshots of the session every x milliseconds
  - [ ] Network profiling
  - [x] JavaScript code profiling
+ - [ ] JavaScript code coverage
  - [ ] Generated V8 bytecode
+ - [ ] MHTML snapshot of the DOM
 
 ## Troubleshooting
 
