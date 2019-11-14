@@ -39,8 +39,19 @@ describe('Api test', function() {
             goto https://www.google.com
             focus [name=q]
             sleep 2000
-            key c
-            sleep 1000
+            key k
+            sleep 200
+            key t
+            sleep 200
+            key h
+            sleep 200
+            
+            key 'U'
+            sleep 200
+            
+            key u
+            sleep 200
+            
           `)
   
   
@@ -49,6 +60,55 @@ describe('Api test', function() {
     })
 
   });
+
+  it('parser', function() {
+    
+      const listener = Container.get<Listener>(Listener);
+      const api = Container.get<Api>(Api);
+      const stepper = Container.get<Stepper>(Stepper);
+
+
+      let tokens = stepper.tokenize('goto https://www.google.com')
+      expect(tokens.length).equal(2, "No correct parsing 'goto https://www.google.com'")
+
+
+      tokens = stepper.tokenize('sleep 500')
+      expect(tokens.length).equal(2, "No correct parsing 'sleep 500'")
+
+
+      tokens = stepper.tokenize('key 1')
+      expect(tokens.length).equal(2, "No correct parsing 'key 1'")
+
+
+      tokens = stepper.tokenize('focus "[name=q]"')
+      console.log(tokens)
+      expect(tokens.length).equal(2, "No correct parsing 'focus [name=q]'")
+
+
+      tokens = stepper.tokenize('keys "Javier Cabrera Arteaga" 200')
+      console.log(tokens)
+      expect(tokens.length).equal(3, "No correct parsisng 'keys 'Javier Cabrera Arteaga' 200'")
+
+
+      tokens = stepper.tokenize('keys "Javier Cabrera Arteaga" 200 500')
+      console.log(tokens)
+      expect(tokens.length).equal(4, "No correct parsisng 'keys 'Javier Cabrera Arteaga' 200 500'")
+  });
+
+  it('parser2', function() {
+    
+    const listener = Container.get<Listener>(Listener);
+    const api = Container.get<Api>(Api);
+    const stepper = Container.get<Stepper>(Stepper);
+
+
+    
+    let tokens = stepper.expand([{
+      opcode: 'keys',
+      params: ['Javier Cabrera Arteaga', '400', '800']
+    }])
+    console.log(tokens)
+});
 
 
 });

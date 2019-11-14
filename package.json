@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "test": "mocha -r ts-node/register tests/**/*.test.ts",
+    "test1": "mocha -r ts-node/register tests/**/*.test.ts -g",
     "coverage": "nyc -r=text-summary  -e .ts -x \"*.test.ts\" npm run test",
     "ts": "ts-node",
     "clean": "rm -rf _bundles lib lib-esm",
