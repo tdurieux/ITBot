@@ -1,6 +1,6 @@
 # BrowserBot
 
-BrowserBot is a wrapper of the Chrome DevTool. It uses an intermediate language to execute steps in a browser serssion. The key insight is that, even for the same steps performed in the browser, we can get "different" internal datas in the Browser, as we presented in [previous works](https://www.researchgate.net/publication/336361099_Scalable_Comparison_of_JavaScript_V8_Bytecode_Traces/stats).
+BrowserBot is a wrapper of the Chrome DevTool. It uses a self language to execute steps in a browser session. The key insight our research follows the idea that even for the same steps performed in the browser, we can get "different" internal datas from the browser, as we presented in [previous works](https://www.researchgate.net/publication/336361099_Scalable_Comparison_of_JavaScript_V8_Bytecode_Traces/stats).
 
 
 ## Recording
