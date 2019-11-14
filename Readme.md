@@ -5,7 +5,8 @@ BrowserBot is a wrapper of the Chrome DevTool. It uses a self language to execut
 
 ## Recording
 
-BrowserBot records some metrics as well:
+Chrome provides several profiling infos in the DevTool view, most of them can be gathered using the specific DevTool protocol through a websocket channel. BrowserBot records and saves those metrics.
+
  - [x] Screnshots of the session every x milliseconds
  - [ ] Network profiling
  - [x] JavaScript code profiling
