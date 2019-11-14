@@ -31,7 +31,7 @@ export default class Api {
         this.listener.sendAndRegister({method: "Input.dispatchKeyEvent", params: {
             type: 'keyDown',
             text: key
-        }}, d => console.log(d))
+        }})
     }
 
 }

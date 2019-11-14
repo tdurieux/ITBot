@@ -9,9 +9,15 @@ import Listener from '../src/core/listener';
 import Api from '../src/core/api';
 import Main from '../src/main';
 import Stepper from '../src/core/stepper';
+import VideoRecorder from '../src/core/video.recorder';
 
 const main = new Main();
 
+  
+const listener = Container.get<Listener>(Listener);
+const api = Container.get<Api>(Api);
+const stepper = Container.get<Stepper>(Stepper);
+const recorder = Container.get<VideoRecorder>(VideoRecorder);
 
 describe('Api test', function() {
   it('Api commands', function() {
@@ -21,14 +27,12 @@ describe('Api test', function() {
       const url = tab.webSocketDebuggerUrl;
           
       const ws = new WebSocket(url);
-  
-      const listener = Container.get<Listener>(Listener);
-      const api = Container.get<Api>(Api);
-      const stepper = Container.get<Stepper>(Stepper);
 
       listener.setup(ws, () => {
           console.log("Websocket channel opened. Enabling runtime namespace")
-  
+        
+          recorder.start("test_session", 200)
+
           listener.sendAndRegister({method: "Runtime.enable"})
           listener.sendAndRegister({method: "Page.enable"})
   
@@ -39,25 +43,15 @@ describe('Api test', function() {
             goto https://www.google.com
             focus [name=q]
             sleep 2000
-            key k
-            sleep 200
-            key t
-            sleep 200
-            key h
-            sleep 200
             
-            key 'U'
-            sleep 200
-            
-            key u
-            sleep 200
+            keys 'KTH Assert' 200 500
             
           `)
   
   
         })
     
-    })
+    }, ()=> recorder.stop())
 
   });
 

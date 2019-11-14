@@ -8,7 +8,7 @@ export default class Listener{
     static counter: number = 0;
 
     listeners: { [key: number]: {
-        cb: (data: any) => void,
+        cb: (data: any, id?: number) => void,
         deleteOnReceive: boolean
     } }
     
@@ -30,7 +30,7 @@ export default class Listener{
 
             if(obj.id in this.listeners)
             {
-                this.listeners[obj.id].cb(data)
+                this.listeners[obj.id].cb(obj, obj.id)
 
                 if(this.listeners[obj.id].deleteOnReceive)
                     delete this.listeners[obj.id]
@@ -39,7 +39,7 @@ export default class Listener{
         })
     }
 
-    sendAndRegister(data: any, cb: (msg) => void = null,  removeOnReceive: boolean = true){
+    sendAndRegister(data: any, cb: (msg, id?: Number) => void = null,  removeOnReceive: boolean = true){
 
         const id = Listener.counter++;
 

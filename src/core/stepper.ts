@@ -96,7 +96,7 @@ export default class Stepper {
                         newCommands.push({
                             opcode: 'sleep',
                             params: [
-                                `${ min === max? min: (Math.random()*(max - min))}`
+                                `${ min + (Math.random()*(max - min))}`
                             ]
                         })
                     }
@@ -121,13 +121,11 @@ export default class Stepper {
 
     executeInstructions = (actions:Instruction[]) => {
         
-        console.log(actions)
         for(let i = 0; i < actions.length; i++){
             let code = actions[i]
 
 
             let interrupt = false;
-            console.log(code)
             switch(code.opcode){
                 case 'goto':
                     this.validateNumberOfParamsAndRaise(code.opcode, code.params.length, 1)

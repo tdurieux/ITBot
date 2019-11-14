@@ -2,6 +2,7 @@ import { Container } from "inversify";
 import Listener from "./listener";
 import Api from "./api";
 import Stepper from "./stepper";
+import VideoRecorder from "./video.recorder";
 
 // import OneByOneGenerator from './population_generator/one-by-one.generator';
 // import AllGenerator from './population_generator/all.generator';
@@ -14,6 +15,7 @@ const myContainer = new Container();
 myContainer.bind<Listener>(Listener).to(Listener).inSingletonScope();
 myContainer.bind<Api>(Api).to(Api).inSingletonScope();
 myContainer.bind<Stepper>(Stepper).to(Stepper).inSingletonScope();
+myContainer.bind<VideoRecorder>(VideoRecorder).to(VideoRecorder);
 
 //WebT tools
 // myContainer.bind<WebTTools>(WebTTools).toSelf().inSingletonScope();

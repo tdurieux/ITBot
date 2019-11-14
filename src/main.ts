@@ -17,7 +17,7 @@ const headless = process.env.headless || ''
 
 export default class Main{
 
-    run(sessionTime, actionsDelay, onTab: (url) => void){
+    run(sessionTime, actionsDelay, onTab: (url) => void, onFinish?: () => void){
 
         const chrome = spawn(chromeAlias,[
             '--remote-debugging-port='+port,
@@ -31,8 +31,15 @@ export default class Main{
         });
 
         let interval = setTimeout(()=>{
+            
+            console.log("Finishing session...")
+
             chrome.kill()
             clearTimeout(interval)
+
+            if(onFinish)
+                onFinish()
+
         }, sessionTime)
 
         // Asking for opened tabs
