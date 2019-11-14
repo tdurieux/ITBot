@@ -31,6 +31,7 @@ BrowsetBot read from a script the steps to perform in the browser. The script fi
 |  opcode | operator1  | operator2  | operator3  | description  |
 |---|-----|---|---|---|
 | goto | url |   |   |  Navigate the page to <url> |
+| focus | CSSSelector |   |   | Focus an input in the page that match with the selector |
 | sleep  |  X   |   |   |  Idle state for X milliseconds |
 | char  |  C   |   |   |  Send key event (C) to the browser |
 | text  |  text   | delay  | max_delay (optional)  |  Send the text to the browser, key by key, with a minimun delay provided by operator2. If operator3 is provided, then the delay is a random variable between operator2 and operator3, i.e. ```operator2 + Math.random()*(operator3 - operator2)``` |
