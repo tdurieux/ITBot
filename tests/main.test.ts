@@ -31,13 +31,13 @@ describe('Api test', function() {
       listener.setup(ws, () => {
           console.log("Websocket channel opened. Enabling runtime namespace")
         
-          recorder.start("test_session", 100)
+          recorder.start("test", 100)
 
           listener.sendAndRegister({method: "Runtime.enable"})
           listener.sendAndRegister({method: "Page.enable"})
   
 
-          profileRecorder.start("test")
+          profileRecorder.start()
 
           stepper.execute(`
             goto https://www.google.com
@@ -50,10 +50,7 @@ describe('Api test', function() {
             
             sleep 2500
 
-          `)
-
-
-  
+          `, "test")
         })
 
 

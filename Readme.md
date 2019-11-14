@@ -16,7 +16,7 @@ Chrome provides several profiling infos in the DevTool view, most of them can be
 
 ## Troubleshooting
 
-- **Chrome does not open**: You need to set a environment variable to the chrome binary if you dont have it, for example, for MacOS ```export chrome=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome```
+- **Chrome does not open**: You need to set a environment variable to the chrome binary if you dont have it, for example, for MacOS ```export chrome='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'```
 - **The port 9222 is busy**: You need to set a environment variable to the debugging port, if you dont have it, for example, for MacOS ```export chromePort=9223```
 
 ## How to use it ?

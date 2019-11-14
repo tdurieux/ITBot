@@ -8,8 +8,9 @@ export default class Listener{
     static counter: number = 0;
 
     listeners: { [key: number]: {
-        cb: (data: any, id?: number) => void,
-        deleteOnReceive: boolean
+        cb: (data: any, id?: number, meta?: any) => void,
+        deleteOnReceive: boolean,
+        meta: any
     } }
     
     ws = null;
@@ -30,7 +31,7 @@ export default class Listener{
 
             if(obj.id in this.listeners)
             {
-                this.listeners[obj.id].cb(obj, obj.id)
+                this.listeners[obj.id].cb(obj, obj.id, this.listeners[obj.id].meta)
 
                 if(this.listeners[obj.id].deleteOnReceive)
                     delete this.listeners[obj.id]
@@ -39,14 +40,15 @@ export default class Listener{
         })
     }
 
-    sendAndRegister(data: any, cb: (msg, id?: Number) => void = null,  removeOnReceive: boolean = true){
+    sendAndRegister(data: any, cb: (msg, id?: Number, meta?: any) => void = null, meta?:any, removeOnReceive: boolean = true){
 
         const id = Listener.counter++;
 
         if(!!cb)
             this.listeners[id] = {
                 deleteOnReceive : removeOnReceive,
-                cb
+                cb,
+                meta
             }
 
         this.ws.send(JSON.stringify({id, ...data}))

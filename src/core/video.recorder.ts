@@ -31,8 +31,10 @@ export default class VideoRecorder{
 
                 if(!fs.existsSync(`out/${sessionName}`))
                     fs.mkdirSync(`out/${sessionName}`)
+                if(!fs.existsSync(`out/${sessionName}/screnshots`))
+                    fs.mkdirSync(`out/${sessionName}/screnshots`)
 
-               fs.writeFile(`out/${sessionName}/${id}.png`, data.result.data, {encoding: 'base64'}, function(err) {
+               fs.writeFile(`out/${sessionName}/screnshots/${id}.png`, data.result.data, {encoding: 'base64'}, function(err) {
                 });
 
             })

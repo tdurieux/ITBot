@@ -17,7 +17,7 @@ const myContainer = new Container();
 myContainer.bind<Listener>(Listener).to(Listener).inSingletonScope();
 myContainer.bind<Api>(Api).to(Api).inSingletonScope();
 myContainer.bind<Stepper>(Stepper).to(Stepper).inSingletonScope();
-myContainer.bind<VideoRecorder>(VideoRecorder).to(VideoRecorder);
+myContainer.bind<VideoRecorder>(VideoRecorder).to(VideoRecorder).inSingletonScope();
 myContainer.bind<ProfileRecorder>(ProfileRecorder).to(ProfileRecorder).inRequestScope();
 myContainer.bind<Main>(Main).to(Main).inSingletonScope();
 

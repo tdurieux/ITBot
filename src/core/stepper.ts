@@ -307,7 +307,7 @@ export default class Stepper {
         return tokens;
     }
 
-    execute(actions: string){
+    execute(actions: string, sessionName: string){
 
         // Split in instructions IR
 
@@ -325,7 +325,7 @@ export default class Stepper {
             }
         }));
 
-        this.executeInstructions(this.actions)
+        this.executeInstructions(this.actions, sessionName)
     }
 
     // Look for complex instruction and transform them to simpler oness
@@ -378,10 +378,12 @@ export default class Stepper {
             throw `Invalid number of arguments for '${opcode}' ${assert}/${count}`
     }
 
-    executeInstructions = (actions:Instruction[]) => {
+    executeInstructions = (actions:Instruction[], sessionName: string) => {
         
         for(let i = 0; i < actions.length; i++){
             let code = actions[i]
+
+            console.log(code)
 
             switch(code.opcode){
                 case 'goto':
@@ -415,10 +417,9 @@ export default class Stepper {
                 case 'sleep':
                     this.validateNumberOfParamsAndRaise(code.opcode, code.params.length, 1)
                     
-                    console.log("Sleeping for...", parseInt(code.params[0]))
 
                     setTimeout(this.executeInstructions, parseInt(code.params[0]), 
-                        actions.slice(i + 1)
+                        actions.slice(i + 1), sessionName
                     )
                     
                     return;
@@ -431,14 +432,11 @@ export default class Stepper {
 
         }
 
-        this.profileRecorder.stop()
-
-        setTimeout(() => {
+        this.profileRecorder.stop(sessionName, () => {
             this.main.close()
             process.exit(0)
-        }, 3000)
+        })
 
-       
 
     }
 
