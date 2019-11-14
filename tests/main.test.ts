@@ -22,7 +22,7 @@ const recorder = Container.get<VideoRecorder>(VideoRecorder);
 describe('Api test', function() {
   it('Api commands', function() {
     
-    main.run(5000, 1000, (tab) => {
+    main.run(20000, 1000, (tab) => {
 
       const url = tab.webSocketDebuggerUrl;
           
@@ -31,7 +31,7 @@ describe('Api test', function() {
       listener.setup(ws, () => {
           console.log("Websocket channel opened. Enabling runtime namespace")
         
-          recorder.start("test_session", 200)
+          recorder.start("test_session", 100)
 
           listener.sendAndRegister({method: "Runtime.enable"})
           listener.sendAndRegister({method: "Page.enable"})
@@ -44,7 +44,9 @@ describe('Api test', function() {
             focus [name=q]
             sleep 2000
             
-            keys 'KTH Assert' 200 500
+            text 'KTH Assert' 200 400
+
+            key Enter
             
           `)
   
@@ -98,7 +100,7 @@ describe('Api test', function() {
 
     
     let tokens = stepper.expand([{
-      opcode: 'keys',
+      opcode: 'text',
       params: ['Javier Cabrera Arteaga', '400', '800']
     }])
     console.log(tokens)
