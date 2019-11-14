@@ -399,7 +399,7 @@ export default class Stepper {
                     const key = code.params[0]
 
                     if(!(key in KEY_MAP))
-                        throw `Key not in special keys map ${key}`
+                        throw `Key not in special key map ${key}`
 
 
                     this.listener.sendKey(key, KEY_MAP[key].keyCode || 0,
@@ -427,7 +427,7 @@ export default class Stepper {
 
         }
 
-        this.main.chromeSession.kill()
+        this.main.close()
 
         process.exit(0)
 

@@ -10,7 +10,7 @@ import Api from './core/api';
 import { injectable } from 'inversify';
 
 // To open chrome as child process
-const {  spawn } = require('child_process');
+const {  spawn, execFile } = require('child_process');
 
 const port = process.env.chromePort || 9222;
 const waitFor =  1000;// seconds
@@ -23,18 +23,34 @@ export default class Main{
 
     public chromeSession: any;
 
-    run(actionsDelay:number, onTab: (url) => void){
+    close(){
+        this.chromeSession.kill();
+    }
+
+    run(sessionName: string, actionsDelay:number, onTab: (url) => void){
 
         this.chromeSession = spawn(chromeAlias,[
             '--remote-debugging-port='+port,
+            '--headless',
             '--user-data-dir=temp',
-            headless,
-            "google.com"
+            '--js-flags="--print-bytecode"'
         ]);
 
+
+        const fd = fs.openSync(`${sessionName}.bytecode`, 'w')
+
         this.chromeSession.stdout.on('data', function(data) {
-            console.log(data.toString());
+            fs.writeFileSync(fd, data)
         });
+
+        this.chromeSession.stderr.on('data', function(data) {
+            fs.writeFileSync(fd, data)
+        });
+
+        this.chromeSession.on('close', function(data) {
+            fs.closeSync(fd)
+        });
+
 
 
         // Asking for opened tabs

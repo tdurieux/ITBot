@@ -20,7 +20,7 @@ const recorder = Container.get<VideoRecorder>(VideoRecorder);
 describe('Api test', function() {
   it('Api commands', function() {
     
-    main.run(1000, (tab) => {
+    main.run("test", 1000, (tab) => {
 
       const url = tab.webSocketDebuggerUrl;
           
@@ -43,6 +43,18 @@ describe('Api test', function() {
             sleep 2000
             
             text 'KTH Assert' 200 400
+
+            key Enter
+            
+            sleep 2500
+
+            focus [name=q]
+
+            key Escape
+
+            sleep 2000
+
+            text 'assert-team.eu' 200 400
 
             key Enter
             
