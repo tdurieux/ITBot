@@ -44,7 +44,7 @@ BrowsetBot read from a script the steps to perform in the browser. The script fi
 
 ### Example
 
-Perform and record a query to google
+Perform and record a query to google (Recorded video [here](docs/test.mp4))
 
 ```
 goto https://www.google.com
