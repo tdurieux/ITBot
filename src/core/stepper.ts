@@ -7,6 +7,7 @@ import { homedir } from "os";
 import { circularDependencyToException } from "inversify/dts/utils/serialization";
 import Main from "../main";
 import ProfileRecorder from "./profile.recorder";
+import VideoRecorder from "./video.recorder";
 
 export type opcodes = 'goto' | 'sleep' | 'char' | 'focus' | 'text' | 'key' 
 
@@ -275,6 +276,9 @@ export default class Stepper {
     @inject(ProfileRecorder)
     profileRecorder: ProfileRecorder;
 
+    @inject(VideoRecorder)
+    videoRecorder: VideoRecorder;
+
     actions: Instruction[];
 
     tokenize(instruction: string){
@@ -307,7 +311,7 @@ export default class Stepper {
         return tokens;
     }
 
-    execute(actions: string, sessionName: string){
+    execute(actions: string, sessionName: string, waitTime: number){
 
         // Split in instructions IR
 
@@ -325,7 +329,8 @@ export default class Stepper {
             }
         }));
 
-        this.executeInstructions(this.actions, sessionName)
+
+        this.executeInstructions(this.actions, sessionName, waitTime)
     }
 
     // Look for complex instruction and transform them to simpler oness
@@ -378,7 +383,7 @@ export default class Stepper {
             throw `Invalid number of arguments for '${opcode}' ${assert}/${count}`
     }
 
-    executeInstructions = (actions:Instruction[], sessionName: string) => {
+    executeInstructions = (actions:Instruction[], sessionName: string, waitTime: number) => {
         
         for(let i = 0; i < actions.length; i++){
             let code = actions[i]
@@ -419,7 +424,7 @@ export default class Stepper {
                     
 
                     setTimeout(this.executeInstructions, parseInt(code.params[0]), 
-                        actions.slice(i + 1), sessionName
+                        actions.slice(i + 1), sessionName, waitTime
                     )
                     
                     return;
@@ -433,9 +438,14 @@ export default class Stepper {
         }
 
         this.profileRecorder.stop(sessionName, () => {
+            this.videoRecorder.stop();
+        })
+
+
+        setTimeout(() => {
             this.main.close()
             process.exit(0)
-        })
+        }, waitTime)
 
 
     }

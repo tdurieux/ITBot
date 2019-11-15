@@ -11,7 +11,7 @@ Chrome provides several profiling infos in the DevTool view, most of them can be
  - [ ] Network profiling
  - [x] JavaScript code profiling
  - [ ] JavaScript code coverage
- - [ ] Generated V8 bytecode
+ - [x] Generated V8 bytecode
  - [ ] MHTML snapshot of the DOM
 
 ## Troubleshooting

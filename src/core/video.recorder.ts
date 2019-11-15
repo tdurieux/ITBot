@@ -31,11 +31,6 @@ export default class VideoRecorder{
                 }
             }, (data, id) => {
                 
-                if(!fs.existsSync("out"))
-                    fs.mkdirSync("out")
-
-                if(!fs.existsSync(`out/${sessionName}`))
-                    fs.mkdirSync(`out/${sessionName}`)
                 if(!fs.existsSync(`out/${sessionName}/screnshots`))
                     fs.mkdirSync(`out/${sessionName}/screnshots`)
 

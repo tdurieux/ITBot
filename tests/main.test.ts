@@ -22,7 +22,7 @@ const profileRecorder = Container.get<ProfileRecorder>(ProfileRecorder);
 describe('Api test', function() {
   it('Api commands', function() {
     
-    main.run("test", 1000, (tab) => {
+    main.run(30, "test", 2000, (tab) => {
 
       const url = tab.webSocketDebuggerUrl;
           
@@ -44,13 +44,8 @@ describe('Api test', function() {
             focus [name=q]
             sleep 2000
             
-            text 'KTH Assert' 200 400
 
-            key Enter
-            
-            sleep 2500
-
-          `, "test")
+          `, "test", 5000)
         })
 
 

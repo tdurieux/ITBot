@@ -45,9 +45,6 @@ export default class ProfileRecorder{
     stop(sessionName: string, cb: () => void){
         this.listener.sendAndRegister({method: 'Profiler.stop'}, (data, id) => {
             
-            if(!fs.existsSync(`out/${sessionName}`))
-                fs.mkdirSync(`out/${sessionName}`)
-            
             if(!fs.existsSync(`out/${sessionName}/profiling`))
                 fs.mkdirSync(`out/${sessionName}/profiling`)
 

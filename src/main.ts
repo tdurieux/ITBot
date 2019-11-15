@@ -8,54 +8,60 @@ import * as req from 'request';
 import Listener from './core/listener';
 import Api from './core/api';
 import { injectable } from 'inversify';
+import * as util from 'util';
+import * as fkill from 'fkill';
 
 // To open chrome as child process
-const {  spawn, execFile } = require('child_process');
+import {  spawn, execFile, exec, fork, ChildProcess } from 'child_process';
 
 const port = process.env.chromePort || 9222;
 const waitFor =  1000;// seconds
-const timeout = (parseInt(process.env.sessionTime) || 5)*1000; //5 seconds by default
 const chromeAlias = process.env.chrome || 'chrome'
+
+const unbufferAlias = process.env.unbuffer || 'unbuffer'
 const headless = process.env.headless || ''
 
 @injectable()
 export default class Main{
 
-    public chromeSession: any;
+    public chromeSession: ChildProcess;
 
     close(){
-        this.chromeSession.kill();
+        console.log("Killing...", this.chromeSession.pid)
+        this.chromeSession.kill("SIGKILL")
+        fkill(this.chromeSession.pid).catch(err => {
+            console.log(err)
+        })
     }
 
-    run(sessionName: string, actionsDelay:number, onTab: (url) => void){
-
-        this.chromeSession = spawn(chromeAlias,[
-            '--remote-debugging-port='+port,
-            '--user-data-dir=temp',
-            '--js-flags="--print-bytecode"'
-        ]);
+    run(timeout: number, sessionName: string, actionsDelay:number, onTab: (url) => void){
 
 
-        const fd = fs.openSync(`${sessionName}.bytecode`, 'w')
+        if(!fs.existsSync("out"))
+            fs.mkdirSync("out")
 
-        this.chromeSession.stdout.on('data', function(data) {
-            fs.writeFileSync(fd, data)
-        });
+        if(!fs.existsSync(`out/${sessionName}`))
+            fs.mkdirSync(`out/${sessionName}`)
 
-        this.chromeSession.stderr.on('data', function(data) {
-            fs.writeFileSync(fd, data)
-        });
+        async function call(){
+            this.chromeSession = exec(`'${chromeAlias}' --headless --remote-debugging-port=${port} --user-data-dir=temp --js-flags="--print-bytecode" > out/${sessionName}/${sessionName}.bytecode`, {
+                maxBuffer: 1 << 30
+                
+            }, (err, stdout, stderr) => {
+                if(stderr)
+                    console.error(stderr)
 
-        this.chromeSession.on('close', function(data) {
-            fs.closeSync(fd)
-        });
+                console.log(stdout)
+            });
+        }
+
+        call.bind(this)();
 
 
 
         // Asking for opened tabs
 
         let interval2 = setTimeout(() => {
-
 
             // Accessing chrome publish websocket address
             req(`http://localhost:${port}/json`,function (error, response, body) {
