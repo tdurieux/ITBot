@@ -13,6 +13,11 @@ export default class VideoRecorder{
     listener: Listener;
 
     interval: any;
+    
+    pad(num, size) {
+        var s = "00000000000" + num;
+        return s.substr(size);
+    }
 
     start(sessionName: string, interval: number){
 
@@ -34,7 +39,8 @@ export default class VideoRecorder{
                 if(!fs.existsSync(`out/${sessionName}/screnshots`))
                     fs.mkdirSync(`out/${sessionName}/screnshots`)
 
-               fs.writeFile(`out/${sessionName}/screnshots/${id}.png`, data.result.data, {encoding: 'base64'}, function(err) {
+               fs.writeFile(`out/${sessionName}/screnshots/${this.pad(id, (id + '').length)}.png`, 
+               data.result.data, {encoding: 'base64'}, function(err) {
                 });
 
             })
