@@ -5,6 +5,7 @@ import Stepper from "./stepper";
 import VideoRecorder from "./video.recorder";
 import Main from "../main";
 import ProfileRecorder from "./profile.recorder";
+import SnapshotRecorder from "./snapshot.recorder";
 
 // import OneByOneGenerator from './population_generator/one-by-one.generator';
 // import AllGenerator from './population_generator/all.generator';
@@ -18,6 +19,7 @@ myContainer.bind<Listener>(Listener).to(Listener).inSingletonScope();
 myContainer.bind<Api>(Api).to(Api).inSingletonScope();
 myContainer.bind<Stepper>(Stepper).to(Stepper).inSingletonScope();
 myContainer.bind<VideoRecorder>(VideoRecorder).to(VideoRecorder).inSingletonScope();
+myContainer.bind<SnapshotRecorder>(SnapshotRecorder).to(SnapshotRecorder).inSingletonScope();
 myContainer.bind<ProfileRecorder>(ProfileRecorder).to(ProfileRecorder).inRequestScope();
 myContainer.bind<Main>(Main).to(Main).inSingletonScope();
 

@@ -8,6 +8,7 @@ import { circularDependencyToException } from "inversify/dts/utils/serialization
 import Main from "../main";
 import ProfileRecorder from "./profile.recorder";
 import VideoRecorder from "./video.recorder";
+import SnapshotRecorder from "./snapshot.recorder";
 
 export type opcodes = 'goto' | 'sleep' | 'char' | 'focus' | 'text' | 'key' 
 
@@ -279,6 +280,9 @@ export default class Stepper {
     @inject(VideoRecorder)
     videoRecorder: VideoRecorder;
 
+    @inject(SnapshotRecorder)
+    snapshotRecorder: SnapshotRecorder;
+
     actions: Instruction[];
 
     tokenize(instruction: string){
@@ -439,6 +443,7 @@ export default class Stepper {
 
         this.profileRecorder.stop(sessionName, () => {
             this.videoRecorder.stop();
+            this.snapshotRecorder.stop();
         })
 
 
