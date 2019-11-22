@@ -9,6 +9,7 @@ import Main from "../main";
 import ProfileRecorder from "./profile.recorder";
 import VideoRecorder from "./video.recorder";
 import SnapshotRecorder from "./snapshot.recorder";
+import NetworkRecorder from "./network.recorder";
 
 export type opcodes = 'goto' | 'sleep' | 'char' | 'focus' | 'text' | 'key' 
 
@@ -283,6 +284,9 @@ export default class Stepper {
     @inject(SnapshotRecorder)
     snapshotRecorder: SnapshotRecorder;
 
+    @inject(NetworkRecorder)
+    networkRecorder: NetworkRecorder;
+
     actions: Instruction[];
 
     tokenize(instruction: string){
@@ -444,6 +448,7 @@ export default class Stepper {
         this.profileRecorder.stop(sessionName, () => {
             this.videoRecorder.stop();
             this.snapshotRecorder.stop();
+            this.networkRecorder.stop();
         })
 
 

@@ -12,6 +12,7 @@ import Stepper from '../src/core/stepper';
 import VideoRecorder from '../src/core/video.recorder';
 import ProfileRecorder from '../src/core/profile.recorder';
 import SnapshotRecorder from '../src/core/snapshot.recorder';
+import NetworkRecorder from '../src/core/network.recorder';
 
 const main = Container.get<Main>(Main)
 const listener = Container.get<Listener>(Listener);
@@ -20,6 +21,7 @@ const stepper = Container.get<Stepper>(Stepper);
 const recorder = Container.get<VideoRecorder>(VideoRecorder);
 const profileRecorder = Container.get<ProfileRecorder>(ProfileRecorder);
 const snapshotRecorder = Container.get<SnapshotRecorder>(SnapshotRecorder);
+const networkRecorder = Container.get<NetworkRecorder>(NetworkRecorder);
 
 describe('Api test', function() {
   it('Api commands', function() {
@@ -35,6 +37,7 @@ describe('Api test', function() {
         
           recorder.start("test", 100)
           snapshotRecorder.start("test", 100);
+          networkRecorder.start("test")
 
           listener.sendAndRegister({method: "Runtime.enable"})
           listener.sendAndRegister({method: "Page.enable"})
