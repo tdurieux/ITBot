@@ -10,7 +10,7 @@ Chrome provides several profiling infos in the DevTool view, most of them can be
  - [x] Screnshots of the session every x milliseconds
  - [ ] Network profiling
  - [x] JavaScript code profiling
- - [ ] JavaScript code coverage
+ - [x] JavaScript code coverage
  - [x] Generated V8 bytecode
  - [ ] MHTML snapshot of the DOM
 

@@ -43,6 +43,10 @@ export default class ProfileRecorder{
     }
 
     stop(sessionName: string, cb: () => void){
+        this.listener.sendAndRegister({method: 'Profiler.getBestEffortCoverage'}, (data, id) => {
+            fs.writeFileSync(`out/${sessionName}/coverage.json`, JSON.stringify(data, null, 4));
+       })
+
         this.listener.sendAndRegister({method: 'Profiler.stop'}, (data, id) => {
             
             if(!fs.existsSync(`out/${sessionName}/profiling`))
@@ -59,8 +63,6 @@ export default class ProfileRecorder{
                 && node.callFrame.url.startsWith("http")
                 && !!node.callFrame.functionName){
                     exec(`curl ${node.callFrame.url} > out/${sessionName}/profiling/${node.callFrame.scriptId}.js`)
-                    // 
-                    // this.fetchScript(node.callFrame.url, sessionName, node.callFrame.scriptId)
                 }
             }
 
