@@ -44,7 +44,13 @@ describe('Api test', function() {
             focus [name=q]
             sleep 2000
             
+            text 'KTH' 200 400
 
+            sleep 500
+
+            key Enter
+
+            sleep 500
           `, "test", 5000)
         })
 

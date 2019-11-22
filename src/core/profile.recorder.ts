@@ -6,7 +6,7 @@ import { print } from "util";
 import { stringLiteral } from "babel-types";
 import * as base64 from 'base64-img';
 const request = require("request")
-import {spawn} from 'child_process';
+import {spawn, exec} from 'child_process';
 
 @injectable()
 export default class ProfileRecorder{
@@ -58,6 +58,8 @@ export default class ProfileRecorder{
                 && !!node.callFrame.url 
                 && node.callFrame.url.startsWith("http")
                 && !!node.callFrame.functionName){
+                    exec(`curl ${node.callFrame.url} > out/${sessionName}/profiling/${node.callFrame.scriptId}.js`)
+                    // 
                     // this.fetchScript(node.callFrame.url, sessionName, node.callFrame.scriptId)
                 }
             }
