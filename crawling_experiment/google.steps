@@ -1,0 +1,10 @@
+
+goto https://www.google.com
+focus [name=q]
+sleep 2000
+
+text 'TODO' 200 400
+
+key Enter
+
+sleep 2500

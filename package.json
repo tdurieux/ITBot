@@ -6,7 +6,7 @@
     "test": "mocha -r ts-node/register tests/**/*.test.ts",
     "test1": "mocha -r ts-node/register tests/**/*.test.ts -g",
     "coverage": "nyc -r=text-summary  -e .ts -x \"*.test.ts\" npm run test",
-    "ts": "ts-node",
+    "ts": "ts-node src/program.ts",
     "clean": "rm -rf _bundles lib lib-esm",
     "compile": "npm run clean && tsc && tsc -m es6 --outDir lib-esm && webpack"
   },
@@ -19,7 +19,7 @@
     "@babel/traverse": "^7.4.3",
     "@babel/types": "^7.4.0",
     "base64-img": "^1.0.4",
-    "commander": "^2.20.0",
+    "commander": "^2.20.3",
     "deasync": "^0.1.15",
     "express": "^4.17.1",
     "fkill": "^6.2.0",
