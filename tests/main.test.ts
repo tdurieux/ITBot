@@ -13,6 +13,8 @@ import VideoRecorder from '../src/core/video.recorder';
 import ProfileRecorder from '../src/core/profile.recorder';
 import SnapshotRecorder from '../src/core/snapshot.recorder';
 import NetworkRecorder from '../src/core/network.recorder';
+import * as schedule from 'node-schedule';
+
 
 const main = Container.get<Main>(Main)
 const listener = Container.get<Listener>(Listener);
@@ -114,6 +116,53 @@ describe('Api test', function() {
     }])
     console.log(tokens)
 });
+
+  it('Run', function() {
+      
+    var j = schedule.scheduleJob("*/5 * * * *", () => {
+
+      console.log("Running...")
+      main.run(30, `test${Date.now()}`, 2000, (tab) => {
+
+        const url = tab.webSocketDebuggerUrl;
+            
+        const ws = new WebSocket(url);
+  
+        listener.setup(ws, () => {
+            console.log("Websocket channel opened. Enabling runtime namespace")
+          
+            recorder.start("test", 100)
+            snapshotRecorder.start("test", 100);
+            networkRecorder.start("test")
+  
+            listener.sendAndRegister({method: "Runtime.enable"})
+            listener.sendAndRegister({method: "Page.enable"})
+  
+  
+            profileRecorder.start()
+  
+            stepper.execute(`
+              goto https://www.google.com
+              focus [name=q]
+              sleep 2000
+              
+              text 'KTH' 200 400
+  
+              sleep 500
+  
+              key Enter
+  
+              sleep 500
+            `, "test", 5000)
+          })
+  
+  
+      
+      })
+
+    });
+
+  });
 
 
 });

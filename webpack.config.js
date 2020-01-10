@@ -1,8 +1,8 @@
 module.exports = {
-    entry: './src/main.ts',
+    entry: './src/program.ts',
     target: 'node',
     output: {
-        filename: 'dist/nap.js',
+        filename: 'dist/browserbot.js',
         path: __dirname
     },
     module: {

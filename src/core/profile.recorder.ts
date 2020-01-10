@@ -62,7 +62,12 @@ export default class ProfileRecorder{
                 && !!node.callFrame.url 
                 && node.callFrame.url.startsWith("http")
                 && !!node.callFrame.functionName){
-                    exec(`curl ${node.callFrame.url} > out/${sessionName}/profiling/${node.callFrame.scriptId}.js`)
+                    try{
+                        exec(`curl ${node.callFrame.url} > out/${sessionName}/profiling/${node.callFrame.scriptId}.js`)
+                    }
+                    catch(e){
+                        console.error(e)
+                    }
                 }
             }
 

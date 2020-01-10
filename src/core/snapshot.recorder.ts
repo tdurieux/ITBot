@@ -35,7 +35,7 @@ export default class SnapshotRecorder{
                 if(!fs.existsSync(`out/${sessionName}/snapshots`))
                     fs.mkdirSync(`out/${sessionName}/snapshots`)
 
-               fs.writeFileSync(`out/${sessionName}/snapshots/${this.pad(id, (id + '').length)}.mthml`, data.result.data);
+               fs.writeFileSync(`out/${sessionName}/snapshots/${this.pad(id, (id + '').length)}.mhtml`, data.result.data);
 
             })
         }, interval)

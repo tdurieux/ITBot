@@ -39,7 +39,7 @@ const session = process.argv[2]
 const script = process.argv[3]
 
 
-main.run(30, session, 2000, (tab) => {
+main.run(300, session, 4000, (tab) => {
 
     const url = tab.webSocketDebuggerUrl;
         
@@ -48,7 +48,7 @@ main.run(30, session, 2000, (tab) => {
     listener.setup(ws, () => {
         console.log("Websocket channel opened. Enabling runtime namespace")
 
-        recorder.start(session, 50)
+        recorder.start(session, 100)
         snapshotRecorder.start(session, 200);
         networkRecorder.start(session)
 

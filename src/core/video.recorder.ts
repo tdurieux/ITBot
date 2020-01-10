@@ -27,7 +27,8 @@ export default class VideoRecorder{
             this.listener.sendAndRegister({
                 method: 'Page.captureScreenshot',
                 params: {
-                    format: 'png'
+                    format: 'jpeg',
+                    quality: 20,
                 }
             }, (data, id) => {
                 

@@ -1,0 +1,10 @@
+
+goto https://duckduckgo.com
+focus #search_form_input_homepage
+sleep 2000
+
+text 'Software Art' 200 400
+
+key Enter
+
+sleep 2500

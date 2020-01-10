@@ -28,7 +28,11 @@ export default class NetworkRecorder{
             fs.writeSync(this.fd, "[\n")
 
             this.listener.addCallback("Network", data => {
-                fs.writeSync(this.fd, `${data},\n`)
+                try{
+                    fs.writeSync(this.fd, `${data},\n`)
+                }catch(e){
+                    console.error(e)
+                }
             })
         })
     }

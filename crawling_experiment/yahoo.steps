@@ -1,0 +1,10 @@
+
+goto https://se.yahoo.com
+focus #uh-search-box
+sleep 2000
+
+text 'Software Art' 200 400
+
+key Enter
+
+sleep 2500
