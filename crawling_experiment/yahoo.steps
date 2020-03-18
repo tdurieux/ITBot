@@ -1,10 +1,10 @@
 
 goto https://search.yahoo.com/
 focus #yschsps
-sleep 2000
+sleep 5000
 
-text 'Software Art' 200 400
+text 'Software Art' 800 1200
 
 key Enter
 
-sleep 2500
+sleep 20000

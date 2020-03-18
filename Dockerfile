@@ -16,7 +16,7 @@ RUN crontab /etc/cron.d/hello-cron
 RUN touch /var/log/cron.log
 
 # Copy ITBOT
-RUN git clone https://github.com/Jacarte/ITBot
+COPY . /ITBot
 
 WORKDIR ITBot
 

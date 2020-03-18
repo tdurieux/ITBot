@@ -1,14 +1,12 @@
 
 goto https://www.bing.com
 focus #sb_form_q
-sleep 2000
+sleep 5000
 
-text 'Software Art' 200 400
+text 'Software Art' 800 1200
 
 sleep 500
 
 key Enter
 
-sleep 7000
-
-key Enter
+sleep 20000

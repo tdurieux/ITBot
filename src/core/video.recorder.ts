@@ -28,16 +28,19 @@ export default class VideoRecorder{
                 method: 'Page.captureScreenshot',
                 params: {
                     format: 'jpeg',
-                    quality: 20,
+                    quality: 10,
                 }
             }, (data, id) => {
                 
                 if(!fs.existsSync(`out/${sessionName}/screnshots`))
                     fs.mkdirSync(`out/${sessionName}/screnshots`)
 
-               fs.writeFile(`out/${sessionName}/screnshots/${this.pad(id, (id + '').length)}.png`, 
-               data.result.data, {encoding: 'base64'}, function(err) {
-                });
+                console.log(data)
+                if(data.result && data.result.data){
+                fs.writeFile(`out/${sessionName}/screnshots/${this.pad(id, (id + '').length)}.png`, 
+                data.result.data, {encoding: 'base64'}, function(err) {
+                    });
+                }
 
             })
         }, interval)

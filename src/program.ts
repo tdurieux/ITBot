@@ -49,7 +49,7 @@ main.run(300, session, 4000, (tab) => {
         console.log("Websocket channel opened. Enabling runtime namespace")
 
         recorder.start(session, 100)
-        snapshotRecorder.start(session, 200);
+        snapshotRecorder.start(session, 500);
         networkRecorder.start(session)
 
         listener.sendAndRegister({method: "Runtime.enable"})
