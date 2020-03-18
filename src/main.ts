@@ -44,7 +44,7 @@ export default class Main{
             fs.mkdirSync(`out/${sessionName}`)
 
         async function call(){
-            this.chromeSession = exec(`'${chromeAlias}' --headless --remote-debugging-port=${port} --window-size=1920,1080 --user-data-dir=temp --js-flags="--print-bytecode" > out/${sessionName}/${sessionName}.bytecode`, {
+            this.chromeSession = exec(`'${chromeAlias}' --headless --no-sandbox --remote-debugging-port=${port} --window-size=1920,1080 --user-data-dir=temp --js-flags="--print-bytecode" > out/${sessionName}/${sessionName}.bytecode`, {
                 maxBuffer: 1 << 30
                 
             }, (err, stdout, stderr) => {
