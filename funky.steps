@@ -1,0 +1,3 @@
+
+goto http://localhost:8089/2mm.html
+sleep 40000

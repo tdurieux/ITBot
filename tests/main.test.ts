@@ -42,23 +42,19 @@ describe('Api test', function() {
           networkRecorder.start("test")
 
           listener.sendAndRegister({method: "Runtime.enable"})
+          listener.sendAndRegister({method: "Profile.enable"})
           listener.sendAndRegister({method: "Page.enable"})
   
 
           profileRecorder.start()
 
           stepper.execute(`
-            goto https://www.google.com
-            focus [name=q]
-            sleep 2000
+            goto https://www.funkykarts.rocks/demo.html
             
-            text 'KTH' 200 400
-
-            sleep 500
 
             key Enter
-
-            sleep 500
+            
+            sleep 1500
           `, "test", 5000)
         })
 

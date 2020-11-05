@@ -48,12 +48,12 @@ main.run(300, session, 4000, (tab) => {
     listener.setup(ws, () => {
         console.log("Websocket channel opened. Enabling runtime namespace")
 
-        recorder.start(session, 100)
-        snapshotRecorder.start(session, 500);
+        // recorder.start(session, 100)
+        // snapshotRecorder.start(session, 1500);
         networkRecorder.start(session)
 
-        listener.sendAndRegister({method: "Runtime.enable"})
-        listener.sendAndRegister({method: "Page.enable"})
+        listener.sendAndRegister({method: "Runtime.enable"}, d => console.log(d))
+        listener.sendAndRegister({method: "Page.enable"}, d => console.log(d))
 
 
         profileRecorder.start()

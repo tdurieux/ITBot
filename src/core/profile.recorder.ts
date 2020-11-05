@@ -16,7 +16,12 @@ export default class ProfileRecorder{
 
     start(){
         this.listener.sendAndRegister({method: "Profiler.enable"}, (data) =>{
-            this.listener.sendAndRegister({method: 'Profiler.start'})
+            console.log(data)
+            this.listener.sendAndRegister({method: 'Profiler.startPreciseCoverage', "params": {
+                "detailed": true // For each value described as parameter in documentation
+            }}, d => console.log(d))
+
+            this.listener.sendAndRegister({method: 'Profiler.start'}, d => console.log(d))
         })
     }
 
@@ -43,7 +48,7 @@ export default class ProfileRecorder{
     }
 
     stop(sessionName: string, cb: () => void){
-        this.listener.sendAndRegister({method: 'Profiler.getBestEffortCoverage'}, (data, id) => {
+        this.listener.sendAndRegister({method: 'Profiler.takePreciseCoverage'}, (data, id) => {
             fs.writeFileSync(`out/${sessionName}/coverage.json`, JSON.stringify(data, null, 4));
        })
 
@@ -52,7 +57,7 @@ export default class ProfileRecorder{
             if(!fs.existsSync(`out/${sessionName}/profiling`))
                 fs.mkdirSync(`out/${sessionName}/profiling`)
 
-            console.log("Nodes count ...", data.result.profile.nodes.length)
+            console.log("Nodes count ...", data)
 
             fs.writeFileSync(`out/${sessionName}/profile.json`, JSON.stringify(data.result.profile, null, 4));
             

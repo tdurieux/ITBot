@@ -44,7 +44,7 @@ export default class Main{
             fs.mkdirSync(`out/${sessionName}`)
 
         async function call(){
-            this.chromeSession = exec(`'${chromeAlias}' --headless --no-sandbox --remote-debugging-port=${port} --window-size=1920,1080 --user-data-dir=temp --js-flags="--print-bytecode" > out/${sessionName}/${sessionName}.bytecode`, {
+            this.chromeSession = exec(`'${chromeAlias}'  --no-sandbox --remote-debugging-port=${port} --window-size=1920,1080 --user-data-dir=temp`, {
                 maxBuffer: 1 << 30
                 
             }, (err, stdout, stderr) => {
@@ -66,6 +66,7 @@ export default class Main{
             // Accessing chrome publish websocket address
             req(`http://localhost:${port}/json`,function (error, response, body) {
                 
+            console.log(body)
                 const tab = JSON.parse(body)[0];
             
                 console.log("Enabled websockets for tab 0")
