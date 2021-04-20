@@ -1,53 +1,48 @@
 import { injectable, inject } from "inversify";
-import Api from "./api";
 import Listener from "./listener";
-import * as fs from 'fs';
-import { print } from "util";
-import { stringLiteral } from "babel-types";
-import * as base64 from 'base64-img';
+import * as fs from "fs";
 
 @injectable()
-export default class VideoRecorder{
-    
-    @inject(Listener)
-    listener: Listener;
+export default class VideoRecorder {
+  @inject(Listener)
+  listener: Listener;
 
-    interval: any;
-    
-    pad(num, size) {
-        var s = "00000000000" + num;
-        return s.substr(size);
+  interval: any;
+
+  async snapshot(sessionName) {
+    console.debug(new Date(), "[Video] take screenshot");
+    const data = await this.listener.register({
+      method: "Page.captureScreenshot",
+      params: {
+        format: "jpeg",
+        quality: 25,
+      },
+    });
+    if (!fs.existsSync(`out/${sessionName}/screenshots`))
+      fs.mkdirSync(`out/${sessionName}/screenshots`);
+
+    if (data.result && data.result.data) {
+      try {
+        await fs.promises.writeFile(
+          `out/${sessionName}/screenshots/${new Date().getTime()}.jpg`,
+          data.result.data,
+          { encoding: "base64" }
+        );
+      } catch (error) {
+        console.error(error);
+      }
     }
+  }
+  async start(sessionName: string, interval: number) {
+    this.snapshot(sessionName);
+    this.interval = setInterval(() => {
+      try {
+        this.snapshot(sessionName);
+      } catch (error) {}
+    }, interval);
+  }
 
-    start(sessionName: string, interval: number){
-
-
-
-        this.interval = setInterval(() => {
-            this.listener.sendAndRegister({
-                method: 'Page.captureScreenshot',
-                params: {
-                    format: 'jpeg',
-                    quality: 10,
-                }
-            }, (data, id) => {
-                
-                if(!fs.existsSync(`out/${sessionName}/screnshots`))
-                    fs.mkdirSync(`out/${sessionName}/screnshots`)
-
-                console.log(data)
-                if(data.result && data.result.data){
-                fs.writeFile(`out/${sessionName}/screnshots/${this.pad(id, (id + '').length)}.png`, 
-                data.result.data, {encoding: 'base64'}, function(err) {
-                    });
-                }
-
-            })
-        }, interval)
-
-    }
-
-    stop(){
-        clearInterval(this.interval)
-    }
+  async stop() {
+    clearInterval(this.interval);
+  }
 }

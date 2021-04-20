@@ -1,45 +1,65 @@
 import { injectable, inject } from "inversify";
-import Api from "./api";
 import Listener from "./listener";
-import * as fs from 'fs';
-import { print } from "util";
-import { stringLiteral } from "babel-types";
-import * as base64 from 'base64-img';
-const request = require("request")
-import {spawn, exec} from 'child_process';
+import * as fs from "fs";
 
 @injectable()
-export default class NetworkRecorder{
-    
-    @inject(Listener)
-    listener: Listener;
+export default class NetworkRecorder {
+  @inject(Listener)
+  listener: Listener;
 
-    sessiongName: string;
-    fd: number;
-    
-    start(sessionName: string){
-        
-        this.sessiongName = sessionName;
+  sessionName: string;
+  fd: number;
+  network: {
+    requestUrls: {
+      [key: string]: string;
+    };
+    history: any[];
+  };
 
-        this.listener.sendAndRegister({method: "Network.enable"}, (data) =>{
-            
-            this.fd = fs.openSync(`out/${sessionName}/network.raw.json`, 'w')
+  async start(sessionName: string) {
+    this.sessionName = sessionName;
+    this.network = { requestUrls: {}, history: [] };
 
-            fs.writeSync(this.fd, "[\n")
+    await this.listener.register({ method: "Network.enable" });
 
-            this.listener.addCallback("Network", data => {
-                try{
-                    fs.writeSync(this.fd, `${data},\n`)
-                }catch(e){
-                    console.error(e)
-                }
-            })
-        })
-    }
+    this.listener.addCallback("Network", async (data) => {
+      const d = JSON.parse(data);
 
-    stop(){
-        fs.writeSync(this.fd, `]`)
+      let requestId = d.params.requestId;
+      if (requestId.indexOf(".") != -1) {
+        requestId = requestId.split(".")[1];
+      }
+      if (d.method == "Network.responseReceived") {
+        this.network.requestUrls[requestId] = d.params.response.url;
+      } else if (d.method == "Network.loadingFinished") {
+        try {
+          const res = await this.listener.register({
+            method: "Network.getResponseBody",
+            params: { requestId: d.params.requestId },
+          });
 
-        fs.closeSync(this.fd)
-    }
+          if (!fs.existsSync(`out/${sessionName}/requests`))
+            fs.mkdirSync(`out/${sessionName}/requests`);
+
+          fs.writeFileSync(
+            `out/${sessionName}/requests/${requestId}`,
+            res.result.body,
+            {
+              encoding: res.result.base64Encoded ? "base64" : "utf-8",
+            }
+          );
+        } catch (error) {}
+      }
+      d.params.requestId = requestId;
+      this.network.history.push(d);
+    });
+  }
+
+  async stop() {
+    console.log("[Network] Writing Network data on disk");
+    await fs.promises.writeFile(
+      `out/${this.sessionName}/network.raw.json`,
+      JSON.stringify(this.network, null, 2)
+    );
+  }
 }

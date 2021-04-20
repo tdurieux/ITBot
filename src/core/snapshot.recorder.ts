@@ -1,48 +1,48 @@
 import { injectable, inject } from "inversify";
-import Api from "./api";
 import Listener from "./listener";
-import * as fs from 'fs';
-import { print } from "util";
-import { stringLiteral } from "babel-types";
-import * as base64 from 'base64-img';
+import * as fs from "fs";
+import { Parser } from "fast-mhtml";
+import { join } from "path";
 
 @injectable()
-export default class SnapshotRecorder{
-    
-    @inject(Listener)
-    listener: Listener;
+export default class SnapshotRecorder {
+  @inject(Listener)
+  listener: Listener;
 
-    interval: any;
-    
-    pad(num, size) {
-        var s = "00000000000" + num;
-        return s.substr(size);
+  interval: any;
+
+  async snapshot(sessionName) {
+    try {
+      const data = await this.listener.register({
+        method: "Page.captureSnapshot",
+      });
+      if (!data.result) return;
+  
+      const output = `out/${sessionName}/snapshots/${new Date().getTime()}`;
+      if (!fs.existsSync(output))
+        await fs.promises.mkdir(output, { recursive: true });
+  
+      const parser = new Parser({});
+      const result = parser.parse(data.result.data).rewrite().spit();
+      for (let file of result) {
+        if (!fs.existsSync(join(output, file.filename)))
+          await fs.promises.writeFile(join(output, file.filename), file.content);
+      }
+      await fs.promises.writeFile(output + ".mhtml", data.result.data);
+    } catch (error) {
+      console.log(error)
     }
+  }
 
-    start(sessionName: string, interval: number){
+  async start(sessionName: string, interval: number) {
+    this.interval = setInterval(() => {
+      try {
+        this.snapshot(sessionName);
+      } catch (error) {}
+    }, interval);
+  }
 
-
-
-        this.interval = setInterval(() => {
-            this.listener.sendAndRegister({
-                method: 'Page.captureSnapshot'
-                
-            }, (data, id) => {
-
-                if(!data.result)
-                    return;
-                
-                if(!fs.existsSync(`out/${sessionName}/snapshots`))
-                    fs.mkdirSync(`out/${sessionName}/snapshots`)
-
-               fs.writeFileSync(`out/${sessionName}/snapshots/${this.pad(id, (id + '').length)}.mhtml`, data.result.data);
-
-            })
-        }, interval)
-
-    }
-
-    stop(){
-        clearInterval(this.interval)
-    }
+  async stop() {
+    clearInterval(this.interval);
+  }
 }
