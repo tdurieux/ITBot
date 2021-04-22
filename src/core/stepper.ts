@@ -7,6 +7,7 @@ import ProfileRecorder from "./profile.recorder";
 import VideoRecorder from "./video.recorder";
 import SnapshotRecorder from "./snapshot.recorder";
 import NetworkRecorder from "./network.recorder";
+import Listener from "./listener";
 
 export type opcodes = "goto" | "sleep" | "char" | "focus" | "text" | "key";
 
@@ -400,6 +401,9 @@ export default class Stepper {
   @inject(Main)
   main: Main;
 
+  @inject(Listener)
+  listener: Listener;
+
   @inject(ProfileRecorder)
   profileRecorder: ProfileRecorder;
 
@@ -597,10 +601,15 @@ export default class Stepper {
         this.networkRecorder.stop(),
         this.snapshotRecorder.stop(),
       ]);
+      await (async () => {
+        return new Promise((resolve: (data: any) => void) => {
+          setTimeout(resolve, 1000);
+        });
+      })();
+      this.listener.ws.close();
+      await this.main.close();
     } catch (error) {
       console.log(error);
     }
-
-    await this.main.close();
   };
 }

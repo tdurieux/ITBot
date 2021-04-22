@@ -22,27 +22,27 @@ const snapshotRecorder = Container.get<SnapshotRecorder>(SnapshotRecorder);
 const networkRecorder = Container.get<NetworkRecorder>(NetworkRecorder);
 
 describe("Api test", function () {
-  it("Api commands", function (cb) {
-    main.run(30, "test", 2000, (tab) => {
-      const url = tab.webSocketDebuggerUrl;
+  it("Api commands", async function () {
+    const tab = await main.run("test");
+    const url = tab.webSocketDebuggerUrl;
 
-      const ws = new WebSocket(url);
+    const ws = new WebSocket(url);
 
-      listener.setup(ws, async () => {
-        console.log("Websocket channel opened. Enabling runtime namespace");
+    await listener.setup(ws);
+    console.log("Websocket channel opened. Enabling runtime namespace");
 
-        await recorder.start("test", 100);
-        await snapshotRecorder.start("test", 100);
-        await networkRecorder.start("test");
+    await recorder.start("test", 100);
+    await snapshotRecorder.start("test", 100);
+    await networkRecorder.start("test");
 
-        await listener.register({ method: "Runtime.enable" });
-        await listener.register({ method: "Profile.enable" });
-        await listener.register({ method: "Page.enable" });
+    await listener.register({ method: "Runtime.enable" });
+    await listener.register({ method: "Profile.enable" });
+    await listener.register({ method: "Page.enable" });
 
-        await profileRecorder.start();
+    await profileRecorder.start();
 
-        await stepper.execute(
-          `
+    await stepper.execute(
+      `
             goto https://www.funkykarts.rocks/demo.html
             
 
@@ -50,12 +50,9 @@ describe("Api test", function () {
             
             sleep 1500
           `,
-          "test",
-          5000
-        );
-        cb();
-      });
-    });
+      "test",
+      5000
+    );
   });
 
   it("parser", function () {
@@ -109,27 +106,28 @@ describe("Api test", function () {
   });
 
   it("Run", function () {
-    var j = schedule.scheduleJob("*/5 * * * *", () => {
+    schedule.scheduleJob("*/5 * * * *", async () => {
       console.log("Running...");
-      main.run(30, `test${Date.now()}`, 2000, (tab) => {
-        const url = tab.webSocketDebuggerUrl;
+      const tab = await main.run(`test${Date.now()}`);
+      const url = tab.webSocketDebuggerUrl;
 
-        const ws = new WebSocket(url);
+      const ws = new WebSocket(url);
 
-        listener.setup(ws, async () => {
-          console.log("Websocket channel opened. Enabling runtime namespace");
+      await listener.setup(ws);
 
-          await recorder.start("test", 100);
-          await snapshotRecorder.start("test", 100);
-          await networkRecorder.start("test");
+      console.log("Websocket channel opened. Enabling runtime namespace");
 
-          await listener.register({ method: "Runtime.enable" });
-          await listener.register({ method: "Page.enable" });
+      await recorder.start("test", 100);
+      await snapshotRecorder.start("test", 100);
+      await networkRecorder.start("test");
 
-          await profileRecorder.start();
+      await listener.register({ method: "Runtime.enable" });
+      await listener.register({ method: "Page.enable" });
 
-          await stepper.execute(
-            `
+      await profileRecorder.start();
+
+      await stepper.execute(
+        `
               goto https://www.google.com
               focus [name=q]
               sleep 2000
@@ -142,11 +140,9 @@ describe("Api test", function () {
   
               sleep 500
             `,
-            "test",
-            5000
-          );
-        });
-      });
+        "test",
+        5000
+      );
     });
   });
 });

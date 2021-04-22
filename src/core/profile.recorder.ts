@@ -1,7 +1,7 @@
 import { injectable, inject } from "inversify";
 import Listener from "./listener";
 import * as fs from "fs";
-import { spawn, exec } from "child_process";
+import req from "got";
 
 @injectable()
 export default class ProfileRecorder {
@@ -40,21 +40,24 @@ export default class ProfileRecorder {
     console.log("[Profiler] Started");
   }
 
-  fetchScript(url, sessionName, id) {
-    try {
-      const curl = spawn("curl", [url]);
-      let buffer = "";
-
-      curl.stdout.on("data", (data) => {
-        buffer += data;
-      });
-
-      curl.on("close", (code) => {
-        fs.readFileSync(`out/${sessionName}/profiling/${id}.js`);
-      });
-    } catch (e) {
-      console.error("Error", e, url);
-    }
+  async fetchScript(url: string, sessionName: string, id: string) {
+    return new Promise<void>((resolve) => {
+      req
+        .stream(url)
+        .on("error", (error) => {
+          console.log("[Network] error ", url);
+          resolve();
+        })
+        .pipe(fs.createWriteStream(`out/${sessionName}/profiling/${id}.js`))
+        .on("error", (error) => {
+          console.log("[Network] error ", url);
+          resolve();
+        })
+        .on("finish", () => {
+          console.log("finished ", url);
+          resolve();
+        });
+    });
   }
 
   async stop(sessionName: string) {
@@ -89,6 +92,8 @@ export default class ProfileRecorder {
     );
 
     // Saving function script file
+    const downloadPromise: Promise<void>[] = [];
+    const uniqueScripts = new Set();
     for (let node of data.result.profile.nodes) {
       if (
         "callFrame" in node &&
@@ -98,14 +103,24 @@ export default class ProfileRecorder {
         node.callFrame.url.startsWith("http") &&
         !!node.callFrame.functionName
       ) {
-        try {
-          exec(
-            `curl ${node.callFrame.url} > out/${sessionName}/profiling/${node.callFrame.scriptId}.js`
-          );
-        } catch (e) {
-          console.error(e);
+        if (uniqueScripts.has(node.callFrame.url)) {
+          continue;
         }
+        console.log("Will download ", node.callFrame.url);
+        uniqueScripts.add(node.callFrame.url);
+        downloadPromise.push(
+          this.fetchScript(
+            node.callFrame.url,
+            sessionName,
+            node.callFrame.scriptId
+          )
+        );
       }
+    }
+    try {
+      await Promise.all(downloadPromise);
+    } catch (error) {
+      console.log(error);
     }
 
     // Write samples as STRAC input

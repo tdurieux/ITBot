@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { injectable } from "inversify";
+import * as WebSocket from "ws";
 
 @injectable()
 export default class Listener {
@@ -17,44 +18,48 @@ export default class Listener {
     [key: string]: ((data: any) => void)[];
   };
 
-  ws = null;
+  ws: WebSocket = null;
 
-  setup(ws, onOpen: () => void) {
-    this.listeners = {};
-    this.callbacks = {};
-    this.ws = ws;
+  setup(ws: WebSocket) {
+    return new Promise((resolve) => {
+      this.listeners = {};
+      this.callbacks = {};
+      this.ws = ws;
 
-    ws.on("open", onOpen);
+      ws.on("open", resolve);
 
-    ws.on("message", (data: string) => {
-      const obj = JSON.parse(data);
+      ws.on("error", console.error);
 
-      if ("error" in obj) {
-        console.error("[Listener]", obj.error.message);
-      }
+      ws.on("message", (data: string) => {
+        const obj = JSON.parse(data);
 
-      if (obj.id in this.listeners) {
-        this.listeners[obj.id].cb(obj, obj.id, this.listeners[obj.id].meta);
-
-        if (this.listeners[obj.id].deleteOnReceive)
-          delete this.listeners[obj.id];
-      } else if ("method" in obj) {
-        const namespace = obj.method.split(".")[0];
-        const event = obj.method.split(".")[1];
-        let cbs: any[] = [];
-
-        if (`${namespace}.${event}` in this.callbacks) {
-          cbs = this.callbacks[obj.method];
-        } else if (namespace in this.callbacks) {
-          cbs = this.callbacks[namespace];
-        } else {
-          console.warn(`[Listener] Message without callback ${obj.method}`);
+        if ("error" in obj) {
+          console.error("[Listener]", obj.error.message);
         }
 
-        if (cbs) {
-          for (let cb1 of cbs) cb1(data);
+        if (obj.id in this.listeners) {
+          this.listeners[obj.id].cb(obj, obj.id, this.listeners[obj.id].meta);
+
+          if (this.listeners[obj.id].deleteOnReceive)
+            delete this.listeners[obj.id];
+        } else if ("method" in obj) {
+          const namespace = obj.method.split(".")[0];
+          const event = obj.method.split(".")[1];
+          let cbs: any[] = [];
+
+          if (`${namespace}.${event}` in this.callbacks) {
+            cbs = this.callbacks[obj.method];
+          } else if (namespace in this.callbacks) {
+            cbs = this.callbacks[namespace];
+          } else {
+            console.warn(`[Listener] Message without callback ${obj.method}`);
+          }
+
+          if (cbs) {
+            for (let cb1 of cbs) cb1(data);
+          }
         }
-      }
+      });
     });
   }
 

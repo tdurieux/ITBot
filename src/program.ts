@@ -26,32 +26,31 @@ if (process.argv.length < 3) throw new Error("Session name is required");
 const session = process.argv[2];
 const script = process.argv[3];
 
-main.run(300, session, 3000, (tab) => {
+(async () => {
+  const tab = await main.run(session);
   const url = tab.webSocketDebuggerUrl;
 
   const ws = new WebSocket(url);
 
-  listener.setup(ws, async () => {
-    console.log("Websocket channel opened. Enabling runtime namespace");
+  await listener.setup(ws);
 
-    await recorder.start(session, 100);
-    await networkRecorder.start(session);
+  console.log("Websocket channel opened. Enabling runtime namespace");
 
-    await listener.register({ method: "Runtime.enable" });
-    await listener.register({ method: "Page.enable" });
+  await recorder.start(session, 100);
+  await networkRecorder.start(session);
 
-    await snapshotRecorder.start(session, 500);
+  await listener.register({ method: "Runtime.enable" });
+  await listener.register({ method: "Page.enable" });
 
-    await profileRecorder.start();
+  await snapshotRecorder.start(session, 500);
 
-    let content = "";
+  await profileRecorder.start();
 
-    if (script) content = fs.readFileSync(script).toString("utf-8");
-    else {
-      content = process.stdin.read().toString();
-    }
+  let content = "";
 
-    await stepper.execute(content, session, 5000);
-    process.exit(0);
-  });
-});
+  if (script) content = fs.readFileSync(script).toString("utf-8");
+  else content = process.stdin.read().toString();
+
+  await stepper.execute(content, session, 5000);
+  process.exit(0);
+})();

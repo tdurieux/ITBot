@@ -6,59 +6,59 @@ import { injectable } from "inversify";
 import * as fkill from "fkill";
 
 // To open chrome as child process
-import { exec, ChildProcess } from "child_process";
+import * as child_process from "child_process";
 
 const port = process.env.chromePort || 9222;
 const chromeAlias = process.env.chrome || "chrome";
 
 @injectable()
 export default class Main {
-  public chromeSession: ChildProcess;
+  public chromeSession: child_process.ChildProcess;
 
   async close() {
     try {
       console.log("Killing...", this.chromeSession.pid);
       this.chromeSession.kill("SIGKILL");
       await fkill(this.chromeSession.pid, { force: true });
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  run(
-    timeout: number,
-    sessionName: string,
-    actionsDelay: number,
-    onTab: (url) => void
-  ) {
-    if (!fs.existsSync("out")) fs.mkdirSync("out");
-
+  async run(sessionName: string) {
     if (!fs.existsSync(`out/${sessionName}`))
-      fs.mkdirSync(`out/${sessionName}`);
+      await fs.promises.mkdir(`out/${sessionName}`, { recursive: true });
 
-    async function call() {
-      this.chromeSession = exec(
-        `'${chromeAlias}' --remote-debugging-port=${port} --window-size=1920,1080 --user-data-dir=temp`,
-        {
-          maxBuffer: 1 << 30,
-        },
-        (err, stdout, stderr) => {
-          // if (err) console.error(err);
-          if (stderr) console.error(stderr);
-        }
-      );
+    async function wait(time) {
+      return new Promise((resolve) => {
+        setTimeout(resolve, time);
+      });
     }
+    console.debug("[main] Start chrome");
+    this.chromeSession = child_process.spawn(
+      chromeAlias,
+      [
+        "--window-size=1920,1080",
+        "--user-data-dir=temp",
+        `--remote-debugging-port=${port}`,
+      ],
+      { detached: true, stdio: "ignore" }
+    );
 
-    call.bind(this)();
+    // wait for the browser to start
+    wait(100);
+    while (true) {
+      try {
+        const res = await req.get(`http://localhost:${port}/json`);
+        const tab = JSON.parse(res.body)[0];
+        console.log("Enabled websockets for tab " + tab.id, tab.url);
 
-    // Asking for opened tabs
-    setTimeout(async () => {
-      // Accessing chrome publish websocket address
-      const res = await req.get(`http://localhost:${port}/json`);
-
-      const tab = JSON.parse(res.body)[0];
-
-      console.log("Enabled websockets for tab " + tab.id, tab.url);
-
-      onTab(tab);
-    }, actionsDelay);
+        return tab;
+      } catch (error) {
+        console.log(error);
+        console.log("Wait for longer");
+        await wait(250);
+      }
+    }
   }
 }
