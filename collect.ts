@@ -29,10 +29,13 @@ const steps = [
   "yahoo",
   "wikipedia",
 ];
-schedule.scheduleJob("30 * * * * *", async () => {
-// (async () => {
+schedule.scheduleJob("*/10 * * * *", async () => {
+  // (async () => {
   for (let step of steps) {
     try {
+      if (fs.existsSync("temp")) {
+        await fs.promises.rm("temp", { recursive: true, force: true });
+      }
       const session = `${step}/${Date.now()}`;
       const tab = await main.run(session);
       const url = tab.webSocketDebuggerUrl;
@@ -58,7 +61,7 @@ schedule.scheduleJob("30 * * * * *", async () => {
 
       await stepper.execute(content, session, 5000);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 });

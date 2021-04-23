@@ -522,80 +522,83 @@ export default class Stepper {
     sessionName: string,
     waitTime: number
   ) => {
-    for (let i = 0; i < actions.length; i++) {
-      let code = actions[i];
+    try {
+      for (let i = 0; i < actions.length; i++) {
+        let code = actions[i];
 
-      console.log(new Date(), code);
+        console.log(new Date(), code);
 
-      switch (code.opcode) {
-        case "goto":
-          this.validateNumberOfParamsAndRaise(
-            code.opcode,
-            code.params.length,
-            1
-          );
-          await this.api.gotoPage(code.params[0]);
-          console.log("Loaded");
-          break;
-        case "focus":
-          this.validateNumberOfParamsAndRaise(
-            code.opcode,
-            code.params.length,
-            1
-          );
-          this.api.focus(code.params[0]);
-          break;
-        case "char":
-          this.validateNumberOfParamsAndRaise(
-            code.opcode,
-            code.params.length,
-            1
-          );
-          this.api.sendChar(code.params[0]);
-          break;
+        switch (code.opcode) {
+          case "goto":
+            this.validateNumberOfParamsAndRaise(
+              code.opcode,
+              code.params.length,
+              1
+            );
+            await this.api.gotoPage(code.params[0]);
+            console.log("Loaded");
+            break;
+          case "focus":
+            this.validateNumberOfParamsAndRaise(
+              code.opcode,
+              code.params.length,
+              1
+            );
+            this.api.focus(code.params[0]);
+            break;
+          case "char":
+            this.validateNumberOfParamsAndRaise(
+              code.opcode,
+              code.params.length,
+              1
+            );
+            this.api.sendChar(code.params[0]);
+            break;
 
-        case "key":
-          this.validateNumberOfParamsAndRaise(
-            code.opcode,
-            code.params.length,
-            1
-          );
+          case "key":
+            this.validateNumberOfParamsAndRaise(
+              code.opcode,
+              code.params.length,
+              1
+            );
 
-          const key = code.params[0];
+            const key = code.params[0];
 
-          if (!(key in KEY_MAP)) throw `Key not in special key map ${key}`;
+            if (!(key in KEY_MAP)) throw `Key not in special key map ${key}`;
 
-          this.api.sendKey(
-            key,
-            KEY_MAP[key].keyCode || 0,
-            KEY_MAP[key].text || "",
-            KEY_MAP[key].code || "unknown"
-          );
-          break;
+            this.api.sendKey(
+              key,
+              KEY_MAP[key].keyCode || 0,
+              KEY_MAP[key].text || "",
+              KEY_MAP[key].code || "unknown"
+            );
+            break;
 
-        case "sleep":
-          this.validateNumberOfParamsAndRaise(
-            code.opcode,
-            code.params.length,
-            1
-          );
+          case "sleep":
+            this.validateNumberOfParamsAndRaise(
+              code.opcode,
+              code.params.length,
+              1
+            );
 
-          await (async () => {
-            return new Promise((resolve: (data: any) => void) => {
-              setTimeout(resolve, parseInt(code.params[0]));
-            });
-          })();
+            await this.wait(parseInt(code.params[0]));
 
-          break;
+            break;
 
-        default:
-          console.error(`Unknown code ${code.opcode} ${code.params}`);
+          default:
+            console.error(`Unknown code ${code.opcode} ${code.params}`);
+        }
       }
+    } finally {
+      await this.stop(sessionName);
     }
-
-    await this.stop(sessionName);
   };
 
+  async wait(time) {
+    return new Promise((resolve: (data: any) => void) => {
+      setTimeout(resolve, time);
+    });
+  }
   async stop(sessionName: string) {
     console.debug(new Date(), "[Stepper] Stop");
     try {
@@ -605,15 +608,13 @@ export default class Stepper {
         this.networkRecorder.stop(),
         this.snapshotRecorder.stop(),
       ]);
-      await (async () => {
-        return new Promise((resolve: (data: any) => void) => {
-          setTimeout(resolve, 1000);
-        });
-      })();
-      this.listener.ws.close();
-      await this.main.close();
+
+      await this.wait(1000);
     } catch (error) {
       console.log(error);
+    } finally {
+      await this.main.close();
+      await this.wait(1000);
     }
   }
 }
