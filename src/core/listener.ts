@@ -28,7 +28,9 @@ export default class Listener {
 
       ws.on("open", resolve);
 
-      ws.on("error", console.error);
+      ws.on("error", error => {
+        console.error(error);
+      });
 
       ws.on("message", (data: string) => {
         const obj = JSON.parse(data);

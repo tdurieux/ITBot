@@ -29,7 +29,7 @@ const steps = [
   "yahoo",
   "wikipedia",
 ];
-schedule.scheduleJob("* */24 * * *", async () => {
+schedule.scheduleJob("30 * * * * *", async () => {
 // (async () => {
   for (let step of steps) {
     try {

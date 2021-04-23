@@ -11,6 +11,16 @@ import * as child_process from "child_process";
 const port = process.env.chromePort || 9222;
 const chromeAlias = process.env.chrome || "chrome";
 
+interface Frame {
+  description: string;
+  devtoolsFrontendUrl: string;
+  id: string;
+  parentId: string;
+  type: string;
+  url: string;
+  webSocketDebuggerUrl: string;
+}
+
 @injectable()
 export default class Main {
   public chromeSession: child_process.ChildProcess;
@@ -18,8 +28,8 @@ export default class Main {
   async close() {
     try {
       console.log("Killing...", this.chromeSession.pid);
-      this.chromeSession.kill("SIGKILL");
       await fkill(this.chromeSession.pid, { force: true });
+      this.chromeSession.kill("SIGKILL");
     } catch (error) {
       console.log(error);
     }
@@ -38,6 +48,7 @@ export default class Main {
     this.chromeSession = child_process.spawn(
       chromeAlias,
       [
+        "--app",
         "--window-size=1920,1080",
         "--user-data-dir=temp",
         `--remote-debugging-port=${port}`,
@@ -46,11 +57,14 @@ export default class Main {
     );
 
     // wait for the browser to start
-    wait(100);
+    wait(250);
     while (true) {
       try {
-        const res = await req.get(`http://localhost:${port}/json`);
-        const tab = JSON.parse(res.body)[0];
+        const res = await req
+          .get(`http://localhost:${port}/json`)
+          .json<Frame[]>();
+        const pages = res.filter((p) => p.type == "page");
+        const tab = pages[pages.length - 1];
         console.log("Enabled websockets for tab " + tab.id, tab.url);
 
         return tab;

@@ -593,6 +593,10 @@ export default class Stepper {
       }
     }
 
+    await this.stop(sessionName);
+  };
+
+  async stop(sessionName: string) {
     console.debug(new Date(), "[Stepper] Stop");
     try {
       await Promise.all([
@@ -611,5 +615,5 @@ export default class Stepper {
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 }
