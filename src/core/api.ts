@@ -29,6 +29,15 @@ export default class Api {
     });
   }
 
+  clickOn(cssSelector: string) {
+    this.listener.sendAndRegister({
+      method: "Runtime.evaluate",
+      params: {
+        expression: `document.querySelector("${cssSelector}").click()`,
+      },
+    });
+  }
+
   blur(cssSelector: string) {
     this.listener.sendAndRegister({
       method: "Runtime.evaluate",

@@ -4,6 +4,8 @@ sleep 500
 focus [name=q]
 sleep 600
 text '2021' 200 400
-sleep 2000
-key Enter
 sleep 1500
+key Enter
+sleep 700
+clickOn .cookie_btn
+sleep 1000

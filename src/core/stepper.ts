@@ -9,7 +9,7 @@ import SnapshotRecorder from "./snapshot.recorder";
 import NetworkRecorder from "./network.recorder";
 import Listener from "./listener";
 
-export type opcodes = "goto" | "sleep" | "char" | "focus" | "text" | "key";
+export type opcodes = "goto" | "sleep" | "char" | "focus" | "clickOn" | "text" | "key";
 
 export type Instruction = {
   opcode: opcodes;
@@ -545,6 +545,14 @@ export default class Stepper {
               1
             );
             this.api.focus(code.params[0]);
+            break;
+          case "clickOn":
+            this.validateNumberOfParamsAndRaise(
+              code.opcode,
+              code.params.length,
+              1
+            );
+            this.api.clickOn(code.params[0]);
             break;
           case "char":
             this.validateNumberOfParamsAndRaise(

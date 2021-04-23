@@ -1,7 +1,7 @@
 
 goto https://bing.com
-sleep 500
-key Enter
+sleep 1500
+clickOn #bnp_btn_accept
 sleep 500
 focus [name=q]
 sleep 500

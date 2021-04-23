@@ -1,6 +1,8 @@
 
 goto https://yahoo.com
-sleep 1000
+sleep 1500
+clickOn [name=agree]
+sleep 750
 focus [name=q]
 sleep 500
 text '2021' 200 400
