@@ -36,13 +36,13 @@ const script = process.argv[3];
 
   console.log("Websocket channel opened. Enabling runtime namespace");
 
-  await recorder.start(session, 100);
+  // await recorder.start(session, 100);
   await networkRecorder.start(session);
 
   await listener.register({ method: "Runtime.enable" });
   await listener.register({ method: "Page.enable" });
 
-  await snapshotRecorder.start(session, 500);
+  // await snapshotRecorder.start(session, 500);
 
   await profileRecorder.start();
 

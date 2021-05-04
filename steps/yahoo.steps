@@ -7,5 +7,8 @@ focus [name=q]
 sleep 500
 text '2021' 200 400
 sleep 2000
+screenshot
 key Enter
 sleep 1000
+snapshot
+screenshot

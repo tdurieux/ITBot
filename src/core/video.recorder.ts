@@ -9,7 +9,7 @@ export default class VideoRecorder {
 
   interval: any;
 
-  async snapshot(sessionName) {
+  async screenshot(sessionName) {
     console.debug(new Date(), "[Video] take screenshot");
     const data = await this.listener.register({
       method: "Page.captureScreenshot",
@@ -34,10 +34,10 @@ export default class VideoRecorder {
     }
   }
   async start(sessionName: string, interval: number) {
-    this.snapshot(sessionName);
+    this.screenshot(sessionName);
     this.interval = setInterval(() => {
       try {
-        this.snapshot(sessionName);
+        this.screenshot(sessionName);
       } catch (error) {}
     }, interval);
   }

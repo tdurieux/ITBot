@@ -5,7 +5,10 @@ focus [name=q]
 sleep 600
 text '2021' 200 400
 sleep 1500
+screenshot
 key Enter
 sleep 700
 clickOn .cookie_btn
-sleep 1000
+sleep 2000
+snapshot
+screenshot

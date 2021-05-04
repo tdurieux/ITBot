@@ -2,6 +2,26 @@ import { injectable, inject } from "inversify";
 import Listener from "./listener";
 import * as fs from "fs";
 
+function clean(obj) {
+  if (typeof obj != "object") {
+    return obj;
+  }
+  for (let key in obj) {
+    if (
+      key == "headers" ||
+      key == "requestHeaders" ||
+      key == "securityDetails" ||
+      key == "associatedCookies" ||
+      key == "securityState"
+    ) {
+      delete obj[key];
+      continue;
+    }
+    obj[key] = clean(obj[key]);
+  }
+  return obj;
+}
+
 @injectable()
 export default class NetworkRecorder {
   @inject(Listener)
@@ -23,7 +43,7 @@ export default class NetworkRecorder {
     await this.listener.register({ method: "Network.enable" });
 
     this.listener.addCallback("Network", async (data) => {
-      const d = JSON.parse(data);
+      const d = clean(JSON.parse(data));
 
       let requestId = d.params.requestId;
       if (requestId.indexOf(".") != -1) {

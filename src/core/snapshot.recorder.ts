@@ -17,20 +17,23 @@ export default class SnapshotRecorder {
         method: "Page.captureSnapshot",
       });
       if (!data.result) return;
-  
+
       const output = `out/${sessionName}/snapshots/${new Date().getTime()}`;
       if (!fs.existsSync(output))
         await fs.promises.mkdir(output, { recursive: true });
-  
+
       const parser = new Parser({});
       const result = parser.parse(data.result.data).rewrite().spit();
       for (let file of result) {
         if (!fs.existsSync(join(output, file.filename)))
-          await fs.promises.writeFile(join(output, file.filename), file.content);
+          await fs.promises.writeFile(
+            join(output, file.filename),
+            file.content
+          );
       }
       await fs.promises.writeFile(output + ".mhtml", data.result.data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
