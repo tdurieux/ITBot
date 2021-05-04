@@ -45,13 +45,13 @@ schedule.scheduleJob("*/10 * * * *", async () => {
       await listener.setup(ws);
       console.log("Websocket channel opened. Enabling runtime namespace");
 
-      await recorder.start(session, 250);
+      // await recorder.start(session, 250);
       await networkRecorder.start(session);
 
       await listener.register({ method: "Runtime.enable" });
       await listener.register({ method: "Page.enable" });
 
-      await snapshotRecorder.start(session, 1000);
+      // await snapshotRecorder.start(session, 1000);
 
       await profileRecorder.start();
 

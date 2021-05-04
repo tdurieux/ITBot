@@ -9,6 +9,6 @@ screenshot
 key Enter
 sleep 700
 clickOn .cookie_btn
-sleep 2000
+sleep 5000
 snapshot
 screenshot
