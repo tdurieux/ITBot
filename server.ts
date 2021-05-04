@@ -125,7 +125,7 @@ api.get("/site/:site/:visit/screenshot", async (req, res) => {
   }
   try {
     res.sendFile(
-      resolve(join(screenshotPath, files[Math.floor(files.length / 2)]))
+      resolve(join(screenshotPath, files[files.length -1]))
     );
   } catch (error) {
     return res.sendStatus(404);
