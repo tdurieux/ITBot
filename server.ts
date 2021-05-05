@@ -1,8 +1,10 @@
 import * as express from "express";
 import * as fs from "fs";
 import { join, resolve } from "path";
+import * as compression from "compression";
 
 const app = express();
+app.use(compression());
 
 const OUTPUT_PATH = "./out";
 const api = express.Router();
@@ -22,6 +24,12 @@ async function extractCoverage(path) {
   if (!fs.existsSync(path)) {
     return null;
   }
+  const minPath = path.replace("coverage.json", "coverage.min.json");
+  if (fs.existsSync(minPath)) {
+    return JSON.parse(
+      await (await fs.promises.readFile(minPath)).toString("utf-8")
+    );
+  }
   const data = JSON.parse(
     await (await fs.promises.readFile(path)).toString("utf-8")
   );
@@ -33,6 +41,7 @@ async function extractCoverage(path) {
       }
     }
   }
+  await fs.promises.writeFile(minPath, JSON.stringify(output));
   return output;
 }
 
@@ -71,6 +80,13 @@ async function extractCSSCoverage(path) {
   if (!fs.existsSync(path)) {
     return null;
   }
+  const minPath = path.replace("css_coverage.json", "css_coverage.min.json");
+  if (fs.existsSync(minPath)) {
+    return JSON.parse(
+      await (await fs.promises.readFile(minPath)).toString("utf-8")
+    );
+  }
+
   const data = JSON.parse(
     await (await fs.promises.readFile(path)).toString("utf-8")
   );
@@ -78,6 +94,7 @@ async function extractCSSCoverage(path) {
   for (let range of data) {
     output.push(range.endOffset - range.startOffset);
   }
+  await fs.promises.writeFile(minPath, JSON.stringify(output));
   return output;
 }
 
@@ -124,9 +141,7 @@ api.get("/site/:site/:visit/screenshot", async (req, res) => {
     return res.sendStatus(404);
   }
   try {
-    res.sendFile(
-      resolve(join(screenshotPath, files[files.length -1]))
-    );
+    res.sendFile(resolve(join(screenshotPath, files[files.length - 1])));
   } catch (error) {
     return res.sendStatus(404);
   }
