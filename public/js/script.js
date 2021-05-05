@@ -1,9 +1,11 @@
 let dates = [];
 const lines = [];
 let index = 0;
-let site = "google";
+let site = null;
+let sites = [];
 let isRunning = true;
 let isActive = false;
+const interval = 500;
 
 function formatDate(t) {
   const d = new Date(parseInt(t));
@@ -30,7 +32,12 @@ function displayScreenshot(time) {
   ).innerHTML = `<img class="screenshot" src="${url}">`;
 }
 
-let display = function () {
+let displayTimeout = null;
+let display = function (force) {
+  if (force) {
+    isActive = false;
+    clearTimeout(displayTimeout);
+  }
   if (isActive) {
     return;
   }
@@ -54,9 +61,15 @@ let display = function () {
   // TODO display content
   displayScreenshot(dates[index]);
 
-  isActive = false;
   if (isRunning) {
-    setTimeout(display, 1000, ++index);
+    displayTimeout = setTimeout(
+      () => {
+        isActive = false;
+        display();
+      },
+      interval,
+      ++index
+    );
   }
 };
 
@@ -84,17 +97,18 @@ document.body.onkeydown = function (e) {
   } else if (e.keyCode == 39 || e.keyCode == 40) {
     pause();
     index++;
-    display();
+    display(true);
     // up & left
   } else if (e.keyCode == 37 || e.keyCode == 38) {
     pause();
     index--;
-    display();
+    display(true);
   }
 };
 
 let onClickTimeout = null;
 let pause = function (e) {
+  clearTimeout(displayTimeout);
   onClickTimeout = setTimeout(() => {
     document.body.className = "pause";
     isRunning = false;
@@ -133,8 +147,34 @@ async function downloadTime(site) {
   dates = await $.get(`/api/site/${site}/visits`);
 }
 
-(async () => {
-  await downloadTime("google");
+async function activateSite(s) {
+  const previous = document.querySelector(".site.active");
+  if (previous) {
+    previous.className = previous.className.replace("active", "");
+  }
+
+  site = s;
+
+  document.querySelector(".site." + s).className =
+    document.querySelector(".site." + s).className + " active";
+
+  await downloadTime(site);
   initTimeline();
-  display();
+  index = 0;
+  display(true);
+}
+
+async function downloadSites() {
+  sites = await $.get(`/api/sites`);
+  let content = "";
+  for (let site of sites.sort()) {
+    content += `<div class="site ${site}" onclick="activateSite('${site}')">${site}</div>`;
+  }
+  document.getElementById("sites").innerHTML = content;
+  site = "google";
+}
+
+(async () => {
+  await downloadSites();
+  activateSite(site);
 })();

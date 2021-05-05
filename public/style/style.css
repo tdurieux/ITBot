@@ -17,6 +17,7 @@ body {
   font-family: Karma, serif;
 }
 .center {
+  position: relative;
   width: 50%;
   margin-left: -150px;
 
@@ -24,23 +25,31 @@ body {
   flex-direction: column;
   align-items: center;
 }
-h1 {
-  text-align: center;
+.site {
+  text-align: left;
   font-size: 50px;
   font-family: Karma, serif;
   margin: 0;
   font-weight: 900;
+  cursor: pointer;
 }
-h1 > span {
-  display: inline-block;
+.site.active {
+  text-decoration: underline;
+}
+#currentDate {
+  position: absolute;
+  right: calc(25% - 105px);
+  top: calc(50% - 32.5px);
+  display: block;
   text-align: center;
-  min-width: 110px;
   padding: 4px 7px;
   color: #000000;
   background: #ffffff;
   line-height: 75px;
   height: 65px;
-  white-space: pre;
+  font-size: 50px;
+  font-family: Karma, serif;
+  font-weight: 900;
 }
 .author {
   color: #aaaaaa;
@@ -107,7 +116,7 @@ h1 > span {
   color: #000;
   background: #ffffff;
 }
-.pause h1 > span,
+.pause #currentDate,
 .pause .time::after {
   background: #000;
   color: #ffffff;
