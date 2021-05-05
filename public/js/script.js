@@ -123,7 +123,7 @@ let resume = function () {
 };
 
 function activate(e) {
-  index = dates.indexOf(parseInt(e.getAttribute("data-value"))) - 1;
+  index = dates.indexOf(e.getAttribute("data-value")) - 1;
 }
 
 function initTimeline() {
