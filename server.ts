@@ -5,6 +5,7 @@ import * as compression from "compression";
 
 const app = express();
 app.use(compression());
+app.use(express.static(__dirname + "/public"));
 
 const OUTPUT_PATH = "./out";
 const api = express.Router();
@@ -16,6 +17,9 @@ api.get("/sites", async (req, res) => {
 });
 
 api.get("/site/:site/visits", async (req, res) => {
+  if (!fs.existsSync(join(OUTPUT_PATH, req.params.site))) {
+    return res.sendStatus(404);
+  }
   const files = await fs.promises.readdir(join(OUTPUT_PATH, req.params.site));
   res.json(files);
 });
