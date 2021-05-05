@@ -119,11 +119,12 @@ let resume = function () {
   clearTimeout(onClickTimeout);
   document.body.className = "";
   isRunning = true;
-  display();
+  display(true);
 };
 
 function activate(e) {
   index = dates.indexOf(e.getAttribute("data-value")) - 1;
+  display(true);
 }
 
 function initTimeline() {
