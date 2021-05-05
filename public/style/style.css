@@ -38,7 +38,7 @@ body {
 }
 #currentDate {
   position: absolute;
-  right: calc(25% - 105px);
+  right: calc(25% - 100px);
   top: calc(50% - 32.5px);
   display: block;
   text-align: center;
@@ -50,6 +50,9 @@ body {
   font-size: 50px;
   font-family: Karma, serif;
   font-weight: 900;
+  white-space: pre;
+  width: 200px;
+  text-align: left;
 }
 .author {
   color: #aaaaaa;
@@ -82,6 +85,7 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   background: linear-gradient(to right, #ffffff 15px, transparent 0);
+  z-index: 99999999;
 }
 .time {
   position: relative;
