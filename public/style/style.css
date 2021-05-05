@@ -86,6 +86,7 @@ body {
   overflow-x: hidden;
   background: linear-gradient(to right, #ffffff 15px, transparent 0);
   z-index: 99999999;
+  overflow: visible;
 }
 .time {
   position: relative;
