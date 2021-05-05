@@ -13,7 +13,7 @@ app.use("/api", api);
 
 api.get("/sites", async (req, res) => {
   const files = await fs.promises.readdir(OUTPUT_PATH);
-  res.json(files);
+  res.json(files.filter(f => fs.statSync(join(OUTPUT_PATH, f)).isDirectory()));
 });
 
 api.get("/site/:site/visits", async (req, res) => {
@@ -50,6 +50,9 @@ async function extractCoverage(path) {
 }
 
 api.get("/site/:site/coverages/js", async (req, res) => {
+  if (!fs.existsSync(join(OUTPUT_PATH, req.params.site))) {
+    return res.sendStatus(404);
+  }
   const files = await fs.promises.readdir(join(OUTPUT_PATH, req.params.site));
   const promises = [];
   for (let visit of files) {
@@ -103,6 +106,9 @@ async function extractCSSCoverage(path) {
 }
 
 api.get("/site/:site/coverages/css", async (req, res) => {
+  if (!fs.existsSync(join(OUTPUT_PATH, req.params.site))) {
+    return res.sendStatus(404);
+  }
   const files = await fs.promises.readdir(join(OUTPUT_PATH, req.params.site));
   const promises = [];
   for (let visit of files) {
@@ -140,6 +146,9 @@ api.get("/site/:site/:visit/screenshot", async (req, res) => {
     req.params.visit,
     "screenshots"
   );
+  if (!fs.existsSync(screenshotPath)) {
+    return res.sendStatus(404);
+  }
   const files = await fs.promises.readdir(screenshotPath);
   if (files.length == 0) {
     return res.sendStatus(404);
@@ -158,6 +167,9 @@ api.get("/site/:site/:visit/network", async (req, res) => {
     req.params.visit,
     "network.raw.json"
   );
+  if (!fs.existsSync(networkPath)) {
+    return res.sendStatus(404);
+  }
   try {
     res.sendFile(resolve(networkPath));
   } catch (error) {
@@ -172,6 +184,9 @@ api.get("/site/:site/:visit/profile", async (req, res) => {
     req.params.visit,
     "profile.json"
   );
+  if (!fs.existsSync(networkPath)) {
+    return res.sendStatus(404);
+  }
   try {
     res.sendFile(resolve(networkPath));
   } catch (error) {
@@ -187,6 +202,9 @@ api.get("/site/:site/:visit/request/:id", async (req, res) => {
     "requests",
     req.params.id
   );
+  if (!fs.existsSync(requestPath)) {
+    return res.sendStatus(404);
+  }
   try {
     res.sendFile(resolve(requestPath));
   } catch (error) {
@@ -201,6 +219,9 @@ api.get("/site/:site/:visit/html", async (req, res) => {
     req.params.visit,
     "snapshots"
   );
+  if (!fs.existsSync(snapshotPath)) {
+    return res.sendStatus(404);
+  }
   const files = await fs.promises.readdir(snapshotPath);
   for (let f of files) {
   }
