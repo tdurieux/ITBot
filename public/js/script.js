@@ -7,7 +7,7 @@ let site = null;
 let sites = [];
 let isRunning = true;
 let isActive = false;
-const interval = 25000;
+const interval = 1000;
 
 function formatDate(t) {
   const d = new Date(parseInt(t));
@@ -34,11 +34,17 @@ function displayScreenshot(time) {
   ).innerHTML = `<img class="screenshot" src="${url}">`;
 }
 
+let profile = null;
 async function displayCallgraph(time) {
+  if (profile && profile.killForceAtlas2) {
+    try {
+      profile.killForceAtlas2();
+    } catch (_) {}
+  }
   const url = `/api/site/${site}/${time}/profile`;
   const res = await $.get(url);
   document.getElementById("content").innerHTML = "";
-  generateProfile(res.nodes, document.getElementById("content"));
+  profile = generateProfile(res.nodes, document.getElementById("content"));
 }
 
 const render = async function (time) {
