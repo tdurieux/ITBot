@@ -1,11 +1,13 @@
 let dates = [];
 const lines = [];
 let index = 0;
+let vue = "screenshot";
+vue = "callgraph";
 let site = null;
 let sites = [];
 let isRunning = true;
 let isActive = false;
-const interval = 500;
+const interval = 25000;
 
 function formatDate(t) {
   const d = new Date(parseInt(t));
@@ -32,6 +34,20 @@ function displayScreenshot(time) {
   ).innerHTML = `<img class="screenshot" src="${url}">`;
 }
 
+async function displayCallgraph(time) {
+  const url = `/api/site/${site}/${time}/profile`;
+  const res = await $.get(url);
+  document.getElementById("content").innerHTML = "";
+  generateProfile(res.nodes, document.getElementById("content"));
+}
+
+const render = async function (time) {
+  if (vue == "screenshot") {
+    await displayScreenshot(time);
+  } else if (vue == "callgraph") {
+    await displayCallgraph(time);
+  }
+};
 let displayTimeout = null;
 let display = function (force) {
   if (force) {
@@ -58,8 +74,7 @@ let display = function (force) {
 
   document.getElementById("time-" + dates[index]).className = "time active";
 
-  // TODO display content
-  displayScreenshot(dates[index]);
+  render(dates[index]);
 
   if (isRunning) {
     displayTimeout = setTimeout(
@@ -73,18 +88,18 @@ let display = function (force) {
   }
 };
 
-document.body.onmousedown = document.body.ontouchstart = function (e) {
-  if (e.target.className.indexOf("time") > -1) {
-    return;
-  }
-  pause();
-};
-document.body.onmouseup = document.body.ontouchend = function (e) {
-  if (e.target.className.indexOf("time") > -1) {
-    return;
-  }
-  resume();
-};
+// document.body.onmousedown = document.body.ontouchstart = function (e) {
+//   if (e.target.className.indexOf("time") > -1) {
+//     return;
+//   }
+//   pause();
+// };
+// document.body.onmouseup = document.body.ontouchend = function (e) {
+//   if (e.target.className.indexOf("time") > -1) {
+//     return;
+//   }
+//   resume();
+// };
 document.body.onkeydown = function (e) {
   // space
   if (e.keyCode == 32) {
@@ -165,17 +180,28 @@ async function activateSite(s) {
   display(true);
 }
 
+async function activateMode(m) {
+  const previous = document.querySelector("#modes > .active");
+  if (previous) {
+    previous.className = previous.className.replace("active", "");
+  }
+  vue = m;
+  document.querySelector("#modes > ." + m).className =
+    document.querySelector("#modes > ." + m).className + " active";
+  display(true);
+}
 async function downloadSites() {
   sites = await $.get(`/api/sites`);
   let content = "";
   for (let site of sites.sort()) {
-    content += `<div class="site ${site}" onclick="activateSite('${site}')">${site}</div>`;
+    content += `<div class="site ${site}" onclick="activateSite('${site}'); return false;">${site}</div>`;
   }
   document.getElementById("sites").innerHTML = content;
-  site = "google";
+  site = "yahoo";
 }
 
 (async () => {
   await downloadSites();
+  activateMode(vue);
   activateSite(site);
 })();

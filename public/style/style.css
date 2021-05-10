@@ -61,7 +61,7 @@ body {
 }
 .author a {
   text-decoration: none;
-  color: #aaaaaa;
+  color: #666;
 }
 .author a:hover {
   text-decoration: underline;
@@ -69,7 +69,21 @@ body {
 #content {
   position: relative;
   width: 60%;
+  min-height: 100%;
   font-size: 20px;
+}
+#modes div {
+  display: inline-block;
+  text-align: left;
+  font-size: 30px;
+  font-family: Karma, serif;
+  margin: 0;
+  font-weight: 900;
+  cursor: pointer;
+  color: #aaaaaa;
+}
+#modes div.active {
+  text-decoration: underline;
 }
 .line {
   min-height: 28px;
@@ -131,6 +145,6 @@ body {
   background: linear-gradient(to right, #000000 15px, transparent 0);
   transition: all 2s ease;
 }
-.screenshot {
+img.screenshot {
   width: 100%;
 }

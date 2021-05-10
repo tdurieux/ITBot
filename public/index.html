@@ -11,8 +11,15 @@
   <body>
     <div id="time_travel"></div>
     <div class="center">
-      <div id="sites">
+      <div id="modes">
+        <div class="screenshot" onclick="activateMode('screenshot'); return false;">
+          screenshot
+        </div>
+        <div class="callgraph" onclick="activateMode('callgraph'); return false;">
+          callgraph
+        </div>
       </div>
+      <div id="sites"></div>
       <span id="currentDate"></span>
     </div>
     <div id="content"></div>
@@ -21,6 +28,38 @@
       src="https://code.jquery.com/jquery-3.6.0.min.js"
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
       crossorigin="anonymous"
+    ></script>
+
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/p5.min.js"
+    ></script>
+    <script
+      language="javascript"
+      src="https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/addons/p5.sound.min.js"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="js/sigma.min.js"
+    ></script>
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="js/sigma.layout.forceAtlas2.min.js"
+    ></script>
+    <script src="js/sigma.plugins.animate.js"></script>
+
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="js/profileVue.js"
     ></script>
 
     <script src="js/script.js"></script>
