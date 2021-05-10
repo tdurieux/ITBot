@@ -36,8 +36,8 @@ function generateProfile(profile, container) {
     if (knownPosition[n.uId]) {
       return knownPosition[n.uId];
     }
-    const size = 10;
-    const lineLength = container.clientWidth / size;
+    const lineLength = profile.length / 10;
+    const size = container.clientWidth / lineLength;
     const p = index * size;
     return {
       x: Math.floor(p % lineLength),
@@ -53,7 +53,7 @@ function generateProfile(profile, container) {
       "@" +
       n.callFrame.functionName +
       ":" +
-      //   n.callFrame.lineNumber +
+      n.callFrame.lineNumber +
       ":" +
       n.callFrame.columnNumber;
 
@@ -101,7 +101,6 @@ function generateProfile(profile, container) {
     s.graph.addNode({
       id: "n" + nodeID,
       label: name,
-      // Display attributes:
       x: p.x,
       y: p.y,
       size: 10,
@@ -119,21 +118,19 @@ function generateProfile(profile, container) {
     }
   }
 
-  s.refresh();
-
   // s.startNoverlap();
   s.configForceAtlas2({
     // linLogMode: true,
     // adjustSizes: true,
-    outboundAttractionDistribution: true,
-    // strongGravityMode: true,
-    scalingRatio: 150,
-    slowDown: 1,
-    gravity: 10,
-    startingIterations: 10,
+    // scalingRatio: 150,
+    barnesHutTheta: 0.3,
+    slowDown: 0.5,
+    gravity: 0,
+    startingIterations: 1,
     iterationsPerRender: 1,
   });
   s.startForceAtlas2();
+  s.refresh();
 
   setTimeout(function () {
     for (let n of s.graph.nodes()) {
@@ -143,6 +140,6 @@ function generateProfile(profile, container) {
       };
     }
     s.killForceAtlas2();
-  }, 800);
+  }, 500);
   return s;
 }
