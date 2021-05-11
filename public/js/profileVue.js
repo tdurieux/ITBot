@@ -124,9 +124,9 @@ function generateProfile(profile, container) {
     // adjustSizes: true,
     // scalingRatio: 150,
     barnesHutTheta: 0.3,
-    slowDown: 0.5,
+    slowDown: 0.33,
     gravity: 0,
-    startingIterations: 1,
+    startingIterations: 10,
     iterationsPerRender: 1,
   });
   s.startForceAtlas2();

@@ -1,9 +1,9 @@
-let dates = [];
+const dates = {};
 const lines = [];
 let index = 0;
 let vue = "screenshot";
 vue = "callgraph";
-let site = null;
+let activeSites = [];
 let sites = [];
 let isRunning = true;
 let isActive = false;
@@ -22,36 +22,50 @@ function formatDate(t) {
   );
 }
 
-function displayScreenshot(time) {
+function displayScreenshot(site, time) {
   const url = `/api/site/${site}/${time}/screenshot`;
-  const screenshot = document.querySelector("#content .screenshot");
+  const screenshot = document.querySelector(
+    "#content ." + site + " .screenshot"
+  );
   if (screenshot) {
     screenshot.src = url;
     return;
   }
-  document.getElementById(
-    "content"
+  document.querySelector(
+    "#content ." + site
   ).innerHTML = `<img class="screenshot" src="${url}">`;
 }
 
 let profile = null;
-async function displayCallgraph(time) {
-  if (profile && profile.killForceAtlas2) {
+async function displayCallgraph(site, time) {
+  if (profile) {
     try {
-      profile.killForceAtlas2();
+      if (profile.killForceAtlas2) {
+        profile.killForceAtlas2();
+      }
     } catch (_) {}
   }
   const url = `/api/site/${site}/${time}/profile`;
   const res = await $.get(url);
-  document.getElementById("content").innerHTML = "";
-  profile = generateProfile(res.nodes, document.getElementById("content"));
+  const element = document.createElement("div");
+  element.className = "callgraph";
+  const children = document.querySelector("#content ." + site).children;
+  document.querySelector("#content ." + site).appendChild(element);
+  profile = generateProfile(res.nodes, element);
+  if (children.length > 1) {
+    setTimeout(() => {
+      children[0].remove();
+    }, 100);
+  }
 }
 
-const render = async function (time) {
-  if (vue == "screenshot") {
-    await displayScreenshot(time);
-  } else if (vue == "callgraph") {
-    await displayCallgraph(time);
+const render = async function (index) {
+  for (let site of activeSites) {
+    if (vue == "screenshot") {
+      await displayScreenshot(site, dates[site][index]);
+    } else if (vue == "callgraph") {
+      await displayCallgraph(site, dates[site][index]);
+    }
   }
 };
 let displayTimeout = null;
@@ -63,11 +77,12 @@ let display = function (force) {
   if (isActive) {
     return;
   }
-  if (index >= dates.length) {
+  const site = Object.keys(dates)[0];
+  if (index >= dates[site].length) {
     index = 0;
   }
   if (index < 0) {
-    index = dates.length - 1;
+    index = dates[site].length - 1;
   }
   isActive = true;
 
@@ -76,11 +91,14 @@ let display = function (force) {
     previous.className = "time";
   }
 
-  document.getElementById("currentDate").innerHTML = formatDate(dates[index]);
+  document.getElementById("currentDate").innerHTML = formatDate(
+    dates[site][index]
+  );
 
-  document.getElementById("time-" + dates[index]).className = "time active";
+  document.getElementById("time-" + dates[site][index]).className =
+    "time active";
 
-  render(dates[index]);
+  render(index);
 
   if (isRunning) {
     displayTimeout = setTimeout(
@@ -144,13 +162,15 @@ let resume = function () {
 };
 
 function activate(e) {
-  index = dates.indexOf(e.getAttribute("data-value")) - 1;
+  const site = Object.keys(dates)[0];
+  index = dates[site].indexOf(e.getAttribute("data-value")) - 1;
   display(true);
 }
 
 function initTimeline() {
   let content = "";
-  for (let t of dates) {
+  const site = Object.keys(dates)[0];
+  for (let t of dates[site]) {
     const dateString = formatDate(t);
 
     content +=
@@ -166,23 +186,50 @@ function initTimeline() {
 }
 
 async function downloadTime(site) {
-  dates = await $.get(`/api/site/${site}/visits`);
+  if (!dates[site]) {
+    dates[site] = await $.get(`/api/site/${site}/visits`);
+  }
+}
+
+function computeViewGrid() {
+  const len = activeSites.length;
+
+  let nbLines = 1;
+  let nbColumns = 1;
+  if (len == 1) {
+    nbLines = 1;
+    nbColumns = 1;
+  } else if (len == 2) {
+    nbLines = 2;
+  } else {
+    nbColumns = 2;
+    nbLines = Math.ceil(len / 2);
+  }
+  document.getElementById("content").className =
+    "line-" + nbLines + " column-" + nbColumns;
 }
 
 async function activateSite(s) {
-  const previous = document.querySelector(".site.active");
-  if (previous) {
+  if (activeSites.indexOf(s) > -1) {
+    activeSites.splice(activeSites.indexOf(s), 1);
+    const previous = document.querySelector(".site." + s);
     previous.className = previous.className.replace("active", "");
+    document.querySelector("#content ." + s).remove();
+    computeViewGrid();
+    return;
   }
-
-  site = s;
+  activeSites.push(s);
+  computeViewGrid();
 
   document.querySelector(".site." + s).className =
     document.querySelector(".site." + s).className + " active";
 
-  await downloadTime(site);
+  const element = document.createElement("div");
+  element.className = s + " view";
+  document.getElementById("content").appendChild(element);
+
+  await downloadTime(s);
   initTimeline();
-  index = 0;
   display(true);
 }
 
