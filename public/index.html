@@ -12,12 +12,22 @@
     <div id="time_travel"></div>
     <div class="center">
       <div id="modes">
-        <div class="screenshot" onclick="activateMode('screenshot'); return false;">
+        <div
+          class="screenshot"
+          onclick="activateMode('screenshot'); return false;"
+        >
           screenshot
         </div>
-        <div class="callgraph" onclick="activateMode('callgraph'); return false;">
+        <div
+          class="callgraph"
+          onclick="activateMode('callgraph'); return false;"
+        >
           callgraph
         </div>
+        <br />
+        <label>
+          Interval (ms) <input type="number" name="interval" id="interval" min="0"
+        /></label>
       </div>
       <div id="sites"></div>
       <span id="currentDate"></span>

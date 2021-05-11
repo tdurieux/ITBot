@@ -7,7 +7,12 @@ let activeSites = [];
 let sites = [];
 let isRunning = true;
 let isActive = false;
-const interval = 1000;
+let interval = 1000;
+
+$("#interval").val(interval);
+$("#interval").on("change", (event) => {
+  interval = parseInt($("#interval").val());
+});
 
 function formatDate(t) {
   const d = new Date(parseInt(t));
