@@ -1,9 +1,11 @@
 import * as express from "express";
 import * as fs from "fs";
+import * as core from "cors";
 import { join, resolve } from "path";
 import * as compression from "compression";
 
 const app = express();
+app.use(core());
 app.use(compression());
 app.use(express.static(__dirname + "/public"));
 
