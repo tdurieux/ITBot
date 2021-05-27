@@ -1,8 +1,0 @@
-{"method":"Runtime.executionContextCreated","params":{"context":{"id":1,"origin":"chrome-extension://kmendfapggjehodndflmmgagdbamhnfd","name":"","auxData":{"isDefault":true,"type":"default","frameId":"21BFA8097E656C877091B11803858172"}}}}
-{"id":3,"result":{}}
-{"error":{"code":-32600,"message":"Message must have integer 'id' property"}}
-{"error":{"code":-32600,"message":"Message must have integer 'id' property"}}
-{"method":"Inspector.detached","params":{"reason":"Render process gone."}}
-{ "method": "Inspector.detached", "params": { "reason": "target_closed"} }
-{"method":"Runtime.executionContextCreated","params":{"context":{"id":1,"origin":"https://www.google.com","name":"","auxData":{"isDefault":true,"type":"default","frameId":"27D8FF559816B724FCCC0CFE67CE1FFE"}}}}
-{"id":42,"result":{}}

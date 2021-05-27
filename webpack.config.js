@@ -1,5 +1,5 @@
 module.exports = {
-    entry: './src/program.ts',
+    entry: './src/cli.ts',
     target: 'node',
     output: {
         filename: 'dist/browserbot.js',

@@ -11,7 +11,7 @@ export default class SnapshotRecorder {
 
   interval: any;
 
-  async snapshot(sessionName) {
+  async snapshot(sessionName: string) {
     try {
       const data = await this.listener.register({
         method: "Page.captureSnapshot",

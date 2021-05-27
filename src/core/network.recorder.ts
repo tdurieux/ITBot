@@ -2,7 +2,7 @@ import { injectable, inject } from "inversify";
 import Listener from "./listener";
 import * as fs from "fs";
 
-function clean(obj) {
+function clean(obj: any) {
   if (typeof obj != "object") {
     return obj;
   }

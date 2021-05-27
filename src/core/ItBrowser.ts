@@ -22,7 +22,7 @@ interface Frame {
 }
 
 @injectable()
-export default class Main {
+export default class ItBrowser {
   public chromeSession: child_process.ChildProcess;
 
   async close() {
@@ -35,13 +35,13 @@ export default class Main {
     }
   }
 
-  async wait(time) {
+  async wait(time: number) {
     return new Promise((resolve) => {
       setTimeout(resolve, time);
     });
   }
 
-  async run(sessionName: string) {
+  async run(sessionName: string): Promise<Frame> {
     if (!fs.existsSync(`out/${sessionName}`))
       await fs.promises.mkdir(`out/${sessionName}`, { recursive: true });
 
@@ -71,9 +71,6 @@ export default class Main {
         .get(`http://localhost:${port}/json`)
         .json<Frame[]>();
       const pages = res.filter((p) => p.type == "page");
-      for (let page of pages) {
-        console.log(page);
-      }
       if (pages.length == 0) {
         await this.close();
         throw "chrome not started";
@@ -88,12 +85,7 @@ export default class Main {
 
       return tab;
     } catch (error) {
-      if (error == "chrome not started") {
-        throw error;
-      }
-      console.log(error);
-      console.log("Wait for longer");
-      await this.wait(250);
+      throw error;
     }
   }
 }

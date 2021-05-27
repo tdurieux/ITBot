@@ -9,7 +9,7 @@ export default class VideoRecorder {
 
   interval: any;
 
-  async screenshot(sessionName) {
+  async screenshot(sessionName: string) {
     console.debug(new Date(), "[Video] take screenshot");
     const data = await this.listener.register({
       method: "Page.captureScreenshot",

@@ -1,2 +1,0 @@
-# * */24 * * *
-* * * * * /ITBot/crawling_experiment/run.sh >> /var/log/cron.log 2>&1

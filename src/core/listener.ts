@@ -76,7 +76,7 @@ export default class Listener {
       (resolve: (data: any) => void, reject: (error: any) => void) => {
         const id = Listener.counter++;
 
-        function cb(msg, id?: Number, meta?: any) {
+        function cb(msg: any, id?: Number, meta?: any) {
           resolve(msg);
           if (msg.result) {
           } else {
@@ -95,7 +95,7 @@ export default class Listener {
   }
   sendAndRegister(
     data: any,
-    cb: (msg, id?: Number, meta?: any) => void = null,
+    cb: (msg: any, id?: Number, meta?: any) => void = null,
     meta?: any,
     removeOnReceive: boolean = true
   ) {

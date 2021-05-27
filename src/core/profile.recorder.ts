@@ -7,7 +7,7 @@ import req from "got";
 export default class ProfileRecorder {
   @inject(Listener)
   listener: Listener;
-  cssFiles: {};
+  cssFiles: {[key: string]: string} = {};
 
   async start() {
     this.cssFiles = {};

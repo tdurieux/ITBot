@@ -3,7 +3,7 @@ import Listener from "./listener";
 import Api from "./api";
 import Stepper from "./stepper";
 import VideoRecorder from "./video.recorder";
-import Main from "../main";
+import ItBrowser from "./ItBrowser";
 import ProfileRecorder from "./profile.recorder";
 import SnapshotRecorder from "./snapshot.recorder";
 import NetworkRecorder from "./network.recorder";
@@ -23,7 +23,7 @@ myContainer.bind<VideoRecorder>(VideoRecorder).to(VideoRecorder).inSingletonScop
 myContainer.bind<SnapshotRecorder>(SnapshotRecorder).to(SnapshotRecorder).inSingletonScope();
 myContainer.bind<ProfileRecorder>(ProfileRecorder).to(ProfileRecorder).inSingletonScope();
 myContainer.bind<NetworkRecorder>(NetworkRecorder).to(NetworkRecorder).inSingletonScope();
-myContainer.bind<Main>(Main).to(Main).inSingletonScope();
+myContainer.bind<ItBrowser>(ItBrowser).to(ItBrowser).inSingletonScope();
 
 //WebT tools
 // myContainer.bind<WebTTools>(WebTTools).toSelf().inSingletonScope();

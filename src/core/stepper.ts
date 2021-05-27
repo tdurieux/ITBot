@@ -2,7 +2,7 @@ import "reflect-metadata";
 
 import { injectable, inject } from "inversify";
 import Api from "./api";
-import Main from "../main";
+import ItBrowser from "./ItBrowser";
 import ProfileRecorder from "./profile.recorder";
 import VideoRecorder from "./video.recorder";
 import SnapshotRecorder from "./snapshot.recorder";
@@ -398,8 +398,8 @@ export default class Stepper {
   @inject(Api)
   api: Api;
 
-  @inject(Main)
-  main: Main;
+  @inject(ItBrowser)
+  main: ItBrowser;
 
   @inject(Listener)
   listener: Listener;
@@ -512,7 +512,7 @@ export default class Stepper {
     return instructions;
   }
 
-  validateNumberOfParamsAndRaise(opcode, count, assert) {
+  validateNumberOfParamsAndRaise(opcode: opcodes, count: number, assert: number) {
     if (count < assert)
       throw `Invalid number of arguments for '${opcode}' ${assert}/${count}`;
   }
@@ -608,7 +608,7 @@ export default class Stepper {
     }
   };
 
-  async wait(time) {
+  async wait(time: number) {
     return new Promise((resolve: (data: any) => void) => {
       setTimeout(resolve, time);
     });
