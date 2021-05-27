@@ -74,6 +74,9 @@ export default class NetworkRecorder {
   }
 
   async stop() {
+    if (!this.network) {
+      return;
+    }
     console.log("[Network] Writing Network data on disk");
     await fs.promises.writeFile(
       `out/${this.sessionName}/network.raw.json`,

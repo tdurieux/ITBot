@@ -7,9 +7,12 @@ import req from "got";
 export default class ProfileRecorder {
   @inject(Listener)
   listener: Listener;
-  cssFiles: {[key: string]: string} = {};
+  cssFiles: { [key: string]: string } = {};
+
+  started = false;
 
   async start() {
+    this.started = true;
     this.cssFiles = {};
 
     this.listener.addCallback("CSS.styleSheetAdded", (data) => {
@@ -61,6 +64,9 @@ export default class ProfileRecorder {
   }
 
   async stop(sessionName: string) {
+    if (!this.started) {
+      return;
+    }
     let data = await this.listener.register({
       method: "Profiler.takePreciseCoverage",
     });
