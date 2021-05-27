@@ -40,8 +40,6 @@ export default class NetworkRecorder {
     this.sessionName = sessionName;
     this.network = { requestUrls: {}, history: [] };
 
-    await this.listener.register({ method: "Network.enable" });
-
     this.listener.addCallback("Network", async (data) => {
       const d = clean(JSON.parse(data));
 

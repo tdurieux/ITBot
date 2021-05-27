@@ -27,10 +27,18 @@ interface BrowserBotOption {
   stepPath?: string;
   snapshotInterval?: number;
   screenshotInterval?: number;
+  collectNetwork?: boolean,
+  collectProfile?: boolean
 }
 
-export default class BrowserBot {
+export default class ITBOT {
   async runStep(opt: BrowserBotOption) {
+    if (opt.collectNetwork === undefined) {
+      opt.collectNetwork = true;
+    }
+    if (opt.collectProfile === undefined) {
+      opt.collectProfile = true;
+    }
     // remove the session
     if (fs.existsSync("temp")) {
       await fs.promises.rm("temp", { recursive: true, force: true });
@@ -45,6 +53,7 @@ export default class BrowserBot {
 
     await listener.register({ method: "Runtime.enable" });
     await listener.register({ method: "Page.enable" });
+    await listener.register({ method: "Network.enable" });
 
     if (opt.screenshotInterval) {
       await recorder.start(opt.outputPath, opt.screenshotInterval);
@@ -52,8 +61,12 @@ export default class BrowserBot {
     if (opt.snapshotInterval) {
       await snapshotRecorder.start(opt.outputPath, opt.snapshotInterval);
     }
-    await networkRecorder.start(opt.outputPath);
-    await profileRecorder.start();
+    if (opt.collectNetwork) {
+      await networkRecorder.start(opt.outputPath);
+    }
+    if (opt.collectProfile) {
+      await profileRecorder.start();
+    }
 
     if (opt.stepPath) {
       const stepInstructions = await fs.promises.readFile(opt.stepPath);
