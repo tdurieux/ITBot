@@ -1,19 +1,19 @@
-import { injectable, inject } from "inversify";
-import Listener from "./listener";
 import * as fs from "fs";
 import { Parser } from "fast-mhtml";
 import { join } from "path";
+import ItBrowser from "./ItBrowser";
 
-@injectable()
 export default class SnapshotRecorder {
-  @inject(Listener)
-  listener: Listener;
-
   interval: any;
+
+  itBrowser: ItBrowser;
+  constructor(itBrowser: ItBrowser) {
+    this.itBrowser = itBrowser;
+  }
 
   async snapshot(sessionName: string) {
     try {
-      const data = await this.listener.register({
+      const data = await this.itBrowser.listener.register({
         method: "Page.captureSnapshot",
       });
       if (!data.result) return;

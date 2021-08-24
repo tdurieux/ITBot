@@ -1,8 +1,6 @@
 import "reflect-metadata";
-import { injectable } from "inversify";
 import * as WebSocket from "ws";
 
-@injectable()
 export default class Listener {
   static counter: number = 0;
 
@@ -76,7 +74,10 @@ export default class Listener {
       (resolve: (data: any) => void, reject: (error: any) => void) => {
         const id = Listener.counter++;
 
+        const timeout = setTimeout(reject, 5000)
+
         function cb(msg: any, id?: Number, meta?: any) {
+          clearTimeout(timeout)
           resolve(msg);
           if (msg.result) {
           } else {

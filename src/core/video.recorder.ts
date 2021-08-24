@@ -1,21 +1,21 @@
-import { injectable, inject } from "inversify";
-import Listener from "./listener";
 import * as fs from "fs";
+import ItBrowser from "./ItBrowser";
 
-@injectable()
 export default class VideoRecorder {
-  @inject(Listener)
-  listener: Listener;
-
   interval: any;
+
+  itBrowser: ItBrowser;
+  constructor(itBrowser: ItBrowser) {
+    this.itBrowser = itBrowser;
+  }
 
   async screenshot(sessionName: string) {
     console.debug(new Date(), "[Video] take screenshot");
-    const data = await this.listener.register({
+    const data = await this.itBrowser.listener.register({
       method: "Page.captureScreenshot",
       params: {
         format: "jpeg",
-        quality: 25,
+        quality: 55,
       },
     });
     if (!fs.existsSync(`out/${sessionName}/screenshots`))

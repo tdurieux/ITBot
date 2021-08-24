@@ -1,15 +1,17 @@
 import "reflect-metadata";
 
-import { injectable, inject } from "inversify";
-import Api from "./api";
 import ItBrowser from "./ItBrowser";
-import ProfileRecorder from "./profile.recorder";
-import VideoRecorder from "./video.recorder";
-import SnapshotRecorder from "./snapshot.recorder";
-import NetworkRecorder from "./network.recorder";
-import Listener from "./listener";
 
-export type opcodes = "goto" | "sleep" | "char" | "focus" | "clickOn" | "text" | "key" | "snapshot" | "screenshot";
+export type opcodes =
+  | "goto"
+  | "sleep"
+  | "char"
+  | "focus"
+  | "clickOn"
+  | "text"
+  | "key"
+  | "snapshot"
+  | "screenshot";
 
 export type Instruction = {
   opcode: opcodes;
@@ -393,30 +395,14 @@ const KEY_MAP = {
   VolumeUp: { keyCode: 183, key: "VolumeUp", code: "VolumeUp", location: 4 },
 };
 
-@injectable()
 export default class Stepper {
-  @inject(Api)
-  api: Api;
-
-  @inject(ItBrowser)
-  main: ItBrowser;
-
-  @inject(Listener)
-  listener: Listener;
-
-  @inject(ProfileRecorder)
-  profileRecorder: ProfileRecorder;
-
-  @inject(VideoRecorder)
-  videoRecorder: VideoRecorder;
-
-  @inject(SnapshotRecorder)
-  snapshotRecorder: SnapshotRecorder;
-
-  @inject(NetworkRecorder)
-  networkRecorder: NetworkRecorder;
-
   actions: Instruction[];
+  isRunning = true;
+
+  itBrowser: ItBrowser;
+  constructor(itBrowser: ItBrowser) {
+    this.itBrowser = itBrowser;
+  }
 
   tokenize(instruction: string) {
     let tokens = [];
@@ -512,7 +498,11 @@ export default class Stepper {
     return instructions;
   }
 
-  validateNumberOfParamsAndRaise(opcode: opcodes, count: number, assert: number) {
+  validateNumberOfParamsAndRaise(
+    opcode: opcodes,
+    count: number,
+    assert: number
+  ) {
     if (count < assert)
       throw `Invalid number of arguments for '${opcode}' ${assert}/${count}`;
   }
@@ -523,7 +513,7 @@ export default class Stepper {
     waitTime: number
   ) => {
     try {
-      for (let i = 0; i < actions.length; i++) {
+      for (let i = 0; i < actions.length && this.isRunning; i++) {
         let code = actions[i];
 
         console.log(new Date(), code);
@@ -535,7 +525,7 @@ export default class Stepper {
               code.params.length,
               1
             );
-            await this.api.gotoPage(code.params[0]);
+            await this.itBrowser.gotoPage(code.params[0]);
             console.log("Loaded");
             break;
           case "focus":
@@ -544,13 +534,13 @@ export default class Stepper {
               code.params.length,
               1
             );
-            this.api.focus(code.params[0]);
+            this.itBrowser.focus(code.params[0]);
             break;
           case "screenshot":
-            await this.videoRecorder.screenshot(sessionName);
+            await this.itBrowser.recorder.screenshot(sessionName);
             break;
           case "snapshot":
-            await this.snapshotRecorder.snapshot(sessionName);
+            await this.itBrowser.snapshotRecorder.snapshot(sessionName);
             break;
           case "clickOn":
             this.validateNumberOfParamsAndRaise(
@@ -558,7 +548,7 @@ export default class Stepper {
               code.params.length,
               1
             );
-            this.api.clickOn(code.params[0]);
+            this.itBrowser.clickOn(code.params[0]);
             break;
           case "char":
             this.validateNumberOfParamsAndRaise(
@@ -566,7 +556,7 @@ export default class Stepper {
               code.params.length,
               1
             );
-            this.api.sendChar(code.params[0]);
+            this.itBrowser.sendChar(code.params[0]);
             break;
 
           case "key":
@@ -580,7 +570,7 @@ export default class Stepper {
 
             if (!(key in KEY_MAP)) throw `Key not in special key map ${key}`;
 
-            this.api.sendKey(
+            this.itBrowser.sendKey(
               key,
               KEY_MAP[key].keyCode || 0,
               KEY_MAP[key].text || "",
@@ -595,7 +585,7 @@ export default class Stepper {
               1
             );
 
-            await this.wait(parseInt(code.params[0]));
+            await ItBrowser.wait(parseInt(code.params[0]));
 
             break;
 
@@ -608,27 +598,22 @@ export default class Stepper {
     }
   };
 
-  async wait(time: number) {
-    return new Promise((resolve: (data: any) => void) => {
-      setTimeout(resolve, time);
-    });
-  }
   async stop(sessionName: string) {
     console.debug(new Date(), "[Stepper] Stop");
+    this.isRunning = false;
     try {
       await Promise.all([
-        this.profileRecorder.stop(sessionName),
-        this.videoRecorder.stop(),
-        this.networkRecorder.stop(),
-        this.snapshotRecorder.stop(),
+        this.itBrowser.profileRecorder.stop(sessionName),
+        this.itBrowser.recorder.stop(),
+        this.itBrowser.networkRecorder.stop(),
+        this.itBrowser.snapshotRecorder.stop(),
       ]);
-
-      await this.wait(1000);
+      await ItBrowser.wait(1000);
     } catch (error) {
       console.log(error);
     } finally {
-      await this.main.close();
-      await this.wait(1000);
+      await this.itBrowser.close();
+      await ItBrowser.wait(1000);
     }
   }
 }

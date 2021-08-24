@@ -1,6 +1,5 @@
-import { injectable, inject } from "inversify";
-import Listener from "./listener";
 import * as fs from "fs";
+import ItBrowser from "./ItBrowser";
 
 function clean(obj: any) {
   if (typeof obj != "object") {
@@ -22,11 +21,7 @@ function clean(obj: any) {
   return obj;
 }
 
-@injectable()
 export default class NetworkRecorder {
-  @inject(Listener)
-  listener: Listener;
-
   sessionName: string;
   fd: number;
   network: {
@@ -35,12 +30,17 @@ export default class NetworkRecorder {
     };
     history: any[];
   };
+  
+  itBrowser: ItBrowser;
+  constructor(itBrowser: ItBrowser) {
+    this.itBrowser = itBrowser;
+  }
 
   async start(sessionName: string) {
     this.sessionName = sessionName;
     this.network = { requestUrls: {}, history: [] };
 
-    this.listener.addCallback("Network", async (data) => {
+    this.itBrowser.listener.addCallback("Network", async (data) => {
       const d = clean(JSON.parse(data));
 
       let requestId = d.params.requestId;
@@ -51,7 +51,7 @@ export default class NetworkRecorder {
         this.network.requestUrls[requestId] = d.params.response.url;
       } else if (d.method == "Network.loadingFinished") {
         try {
-          const res = await this.listener.register({
+          const res = await this.itBrowser.listener.register({
             method: "Network.getResponseBody",
             params: { requestId: d.params.requestId },
           });

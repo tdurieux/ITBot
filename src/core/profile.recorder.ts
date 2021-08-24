@@ -1,28 +1,29 @@
-import { injectable, inject } from "inversify";
-import Listener from "./listener";
 import * as fs from "fs";
 import req from "got";
+import ItBrowser from "./ItBrowser";
 
-@injectable()
 export default class ProfileRecorder {
-  @inject(Listener)
-  listener: Listener;
   cssFiles: { [key: string]: string } = {};
-
   started = false;
+
+  itBrowser: ItBrowser;
+  constructor(itBrowser: ItBrowser) {
+    this.itBrowser = itBrowser;
+  }
+
 
   async start() {
     this.started = true;
     this.cssFiles = {};
 
-    this.listener.addCallback("CSS.styleSheetAdded", (data) => {
+    this.itBrowser.listener.addCallback("CSS.styleSheetAdded", (data) => {
       data = JSON.parse(data).params.header;
       this.cssFiles[data.styleSheetId] = data.sourceURL;
     });
 
-    await this.listener.register({ method: "DOM.enable" });
-    await this.listener.register({ method: "CSS.enable" });
-    await this.listener.register({
+    await this.itBrowser.listener.register({ method: "DOM.enable" });
+    await this.itBrowser.listener.register({ method: "CSS.enable" });
+    await this.itBrowser.listener.register({
       method: "CSS.startRuleUsageTracking",
       params: {
         detailed: true,
@@ -30,9 +31,9 @@ export default class ProfileRecorder {
       },
     });
     console.log("[CSS coverage] Started");
-    await this.listener.register({ method: "Profiler.enable" });
-    await this.listener.register({ method: "Profiler.start" });
-    await this.listener.register({
+    await this.itBrowser.listener.register({ method: "Profiler.enable" });
+    await this.itBrowser.listener.register({ method: "Profiler.start" });
+    await this.itBrowser.listener.register({
       method: "Profiler.startPreciseCoverage",
       params: {
         detailed: true,
@@ -67,7 +68,7 @@ export default class ProfileRecorder {
     if (!this.started) {
       return;
     }
-    let data = await this.listener.register({
+    let data = await this.itBrowser.listener.register({
       method: "Profiler.takePreciseCoverage",
     });
     fs.writeFileSync(
@@ -75,7 +76,7 @@ export default class ProfileRecorder {
       JSON.stringify(data.result.result, null, 2)
     );
 
-    data = await this.listener.register({
+    data = await this.itBrowser.listener.register({
       method: "CSS.stopRuleUsageTracking",
     });
     for (let css of data.result.ruleUsage) {
@@ -88,7 +89,7 @@ export default class ProfileRecorder {
       JSON.stringify(data.result.ruleUsage, null, 2)
     );
 
-    data = await this.listener.register({ method: "Profiler.stop" });
+    data = await this.itBrowser.listener.register({ method: "Profiler.stop" });
     if (!fs.existsSync(`out/${sessionName}/profiling`))
       fs.mkdirSync(`out/${sessionName}/profiling`);
 
