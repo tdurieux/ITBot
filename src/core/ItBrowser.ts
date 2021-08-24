@@ -21,18 +21,31 @@ interface Frame {
   webSocketDebuggerUrl: string;
 }
 
+function pidIsRunning(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 @injectable()
 export default class ItBrowser {
   public chromeSession: child_process.ChildProcess;
 
   async close() {
-    try {
-      console.log("Killing...", this.chromeSession.pid);
-      await fkill(this.chromeSession.pid, { force: true });
-      this.chromeSession.kill("SIGKILL");
-    } catch (error) {
-      console.log(error);
-    }
+    if (!this.chromeSession) return;
+    do {
+      try {
+        console.log("Killing...", this.chromeSession.pid);
+        await fkill(this.chromeSession.pid, { force: true });
+        this.chromeSession.kill("SIGKILL");
+      } catch (error) {
+        console.log(error);
+      }
+      await this.wait(100);
+    } while (pidIsRunning(this.chromeSession.pid));
   }
 
   async wait(time: number) {

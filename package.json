@@ -13,7 +13,7 @@
     "test": "mocha -r ts-node/register tests/**/*.test.ts",
     "testg": "mocha -r ts-node/register tests/**/*.test.ts -g",
     "coverage": "nyc -r=text-summary  -e .ts -x \"*.test.ts\" npm run test",
-    "ts": "ts-node src/program.ts",
+    "ts": "ts-node src/cli.ts",
     "clean": "rm -rf _bundles lib",
     "compile": "npm run clean && tsc"
   },

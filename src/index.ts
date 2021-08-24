@@ -33,6 +33,7 @@ interface BrowserBotOption {
 
 export default class ITBOT {
   async runStep(opt: BrowserBotOption) {
+    await main.close()
     if (opt.collectNetwork === undefined) {
       opt.collectNetwork = true;
     }

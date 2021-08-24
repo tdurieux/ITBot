@@ -54,7 +54,7 @@ export default class Listener {
           } else if (namespace in this.callbacks) {
             cbs = this.callbacks[namespace];
           } else {
-            console.warn(`[Listener] Message without callback ${obj.method}`);
+            // console.warn(`[Listener] Message without callback ${obj.method}`);
           }
 
           if (cbs) {
