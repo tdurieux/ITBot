@@ -36,10 +36,6 @@ function pidIsRunning(pid) {
 }
 let instances: ItBrowser[] = [];
 
-class CancelablePromise<T> extends Promise<T> {
-  cancel(): void {}
-}
-
 export default class ItBrowser {
   public chromeSession: child_process.ChildProcess;
   recorder: VideoRecorder;
@@ -79,7 +75,7 @@ export default class ItBrowser {
         console.log(error);
       }
       await ItBrowser.wait(100);
-    } while (pidIsRunning(this.chromeSession.pid));
+    } while (this.chromeSession && pidIsRunning(this.chromeSession.pid));
     this.chromeSession = null;
     this.stepper.stop(this.sessionName);
   }
