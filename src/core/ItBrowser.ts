@@ -147,6 +147,15 @@ export default class ItBrowser {
     });
   }
 
+  scroll(position: number) {
+    this.listener.sendAndRegister({
+      method: "Runtime.evaluate",
+      params: {
+        expression: `window.scroll({top: ${position},left: 0,behavior: 'smooth'});`,
+      },
+    });
+  }
+
   focus(cssSelector: string) {
     this.listener.sendAndRegister({
       method: "Runtime.evaluate",

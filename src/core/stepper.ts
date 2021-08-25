@@ -8,6 +8,7 @@ export type opcodes =
   | "char"
   | "focus"
   | "clickOn"
+  | "scroll"
   | "text"
   | "key"
   | "snapshot"
@@ -413,7 +414,7 @@ export default class Stepper {
     for (let c of instruction) {
       if (c === "'" || c === '"') {
         startString = !startString;
-        continue;
+        if (c === '"') continue;
       }
       if (c === " " || c === "\t") {
         if (!startString) {
@@ -549,6 +550,14 @@ export default class Stepper {
               1
             );
             this.itBrowser.clickOn(code.params[0]);
+            break;
+          case "scroll":
+            this.validateNumberOfParamsAndRaise(
+              code.opcode,
+              code.params.length,
+              1
+            );
+            this.itBrowser.scroll(parseInt(code.params[0]));
             break;
           case "char":
             this.validateNumberOfParamsAndRaise(
